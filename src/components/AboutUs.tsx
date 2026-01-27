@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Check, Truck, Headset, RotateCcw,
   Monitor, Rocket, Settings, PenTool, PhoneCall, Code,

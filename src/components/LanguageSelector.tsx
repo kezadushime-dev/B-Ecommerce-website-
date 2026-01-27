@@ -1,9 +1,9 @@
 import React from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Globe, DollarSign } from 'lucide-react';
 
 export const LanguageSelector: React.FC = () => {
-  const { language, currency, setLanguage, setCurrency, t } = useLanguage();
+  const { language, currency, setLanguage, setCurrency } = useLanguage();
 
   return (
     <div className="flex items-center gap-4">
