@@ -1,10 +1,6 @@
-import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Grid } from 'swiper/modules';
 import { ChevronLeft, ChevronRight, ShoppingCart, Eye } from 'lucide-react';
-import 'swiper/css';
-import 'swiper/css/grid';
-import 'swiper/css/navigation';
 
 const categories = [
   { name: "Men", img: "https://i.pinimg.com/1200x/b9/44/75/b94475bddf2e7c451335ad341b39ebca.jpg" },
@@ -59,8 +55,8 @@ export const CategorySidebar = () => {
                     {p.discount && <span className="absolute top-2 left-2 bg-[#77b43f] text-white text-[10px] px-1.5 py-0.5 font-bold z-10">{p.discount}</span>}
                     <img src={p.image} alt="" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover/item:opacity-100 transition-opacity bg-black/5">
-                      <button className="bg-white p-2 rounded-full shadow-sm hover:bg-blue-600 hover:text-white"><ShoppingCart size={14}/></button>
-                      <button className="bg-white p-2 rounded-full shadow-sm hover:bg-blue-600 hover:text-white"><Eye size={14}/></button>
+                      <button title="Add to cart" className="bg-white p-2 rounded-full shadow-sm hover:bg-blue-600 hover:text-white"><ShoppingCart size={14}/></button>
+                      <button title="Quick view" className="bg-white p-2 rounded-full shadow-sm hover:bg-blue-600 hover:text-white"><Eye size={14}/></button>
                     </div>
                   </div>
                   <h4 className="text-[12px] text-blue-600 line-clamp-1">{p.name}</h4>
@@ -69,8 +65,8 @@ export const CategorySidebar = () => {
               </SwiperSlide>
             ))}
           </Swiper>
-          <button className="p-prev absolute right-16 top-6 z-10 bg-white border p-1 opacity-0 group-hover:opacity-100 transition-opacity"><ChevronLeft size={16}/></button>
-          <button className="p-next absolute right-2 top-6 z-10 bg-white border p-1 opacity-0 group-hover:opacity-100 transition-opacity"><ChevronRight size={16}/></button>
+          <button title="Previous" className="p-prev absolute right-16 top-6 z-10 bg-white border p-1 opacity-0 group-hover:opacity-100 transition-opacity"><ChevronLeft size={16}/></button>
+          <button title="Next" className="p-next absolute right-2 top-6 z-10 bg-white border p-1 opacity-0 group-hover:opacity-100 transition-opacity"><ChevronRight size={16}/></button>
         </div>
       </div>
     </div>

@@ -1,17 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Calendar, User, ArrowLeft, Facebook, Twitter, Linkedin } from 'lucide-react';
 
-interface BlogPost {
-  id: number;
-  title: string;
-  category: string;
-  author: string;
-  date: string;
-  image: string;
-  excerpt: string;
-  content: string;
-}
-
 const ALL_POSTS = [
   {
     id: 1,
@@ -145,9 +134,9 @@ export const BlogPage: React.FC = () => {
                 <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
                   <span className="text-[11px] font-black uppercase tracking-widest">Share This Article:</span>
                   <div className="flex gap-2">
-                    <button className="p-2 bg-blue-600 text-white rounded-sm hover:bg-black transition-all"><Facebook size={14} /></button>
-                    <button className="p-2 bg-sky-400 text-white rounded-sm hover:bg-black transition-all"><Twitter size={14} /></button>
-                    <button className="p-2 bg-blue-800 text-white rounded-sm hover:bg-black transition-all"><Linkedin size={14} /></button>
+                    <button title="Share on Facebook" className="p-2 bg-blue-600 text-white rounded-sm hover:bg-black transition-all"><Facebook size={14} /></button>
+                    <button title="Share on Twitter" className="p-2 bg-sky-400 text-white rounded-sm hover:bg-black transition-all"><Twitter size={14} /></button>
+                    <button title="Share on LinkedIn" className="p-2 bg-blue-800 text-white rounded-sm hover:bg-black transition-all"><Linkedin size={14} /></button>
                   </div>
                 </div>
 
@@ -223,7 +212,7 @@ export const BlogPage: React.FC = () => {
           <aside className="lg:w-1/3 space-y-12">
             <div className="relative">
               <input type="text" placeholder="Search..." className="w-full border border-gray-100 bg-[#f9f9f9] p-4 pr-12 text-sm outline-none focus:border-blue-600" />
-              <button className="absolute right-0 top-0 h-full w-12 bg-blue-600 text-white flex items-center justify-center"><Search size={18} /></button>
+              <button title="Search" className="absolute right-0 top-0 h-full w-12 bg-blue-600 text-white flex items-center justify-center"><Search size={18} /></button>
             </div>
 
             <div className="border border-gray-100">

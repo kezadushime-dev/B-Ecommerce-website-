@@ -1,12 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-interface Review {
-  username: string;
-  rating: number;
-  comment: string;
-  date: string;
-}
-
 interface Product {
   id: number;
   name: string;

@@ -1,12 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
+import { useSearchParams } from 'react-router-dom';
 import {
-  Heart, Share2, Maximize2, ShoppingCart, ChevronDown, Star, LayoutGrid, List,
-  ArrowLeft, Search, User, ShoppingBag, X, Trash2, Scale, Plus, Minus, Send
+  Heart, ChevronDown, Star, LayoutGrid, List,
+  ArrowLeft, X, Scale, Plus, Minus, Send
 } from 'lucide-react';
 
 // --- Types ---
@@ -339,7 +335,6 @@ const INITIAL_PRODUCTS: Product[] = [
 ];
 
 const App = () => {
-  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [view, setView] = useState<'shop' | 'wishlist' | 'compare'>('shop');
@@ -351,10 +346,8 @@ const App = () => {
   const [compareList, setCompareList] = useState<number[]>([]);
 
   // Filter States
-  const [search, setSearch] = useState('');
   const [catFilt, setCatFilt] = useState('All');
   const [priceFilt, setPriceFilt] = useState(200);
-  const [colorFilt, setColorFilt] = useState<string | null>(null);
   const [sizeFilt, setSizeFilt] = useState<string | null>(null);
   const [ratingFilt, setRatingFilt] = useState<number>(0);
 
@@ -396,12 +389,10 @@ const App = () => {
     return products.filter(p => {
       return (catFilt === 'All' || p.category === catFilt) &&
              (p.price <= priceFilt) &&
-             (p.name.toLowerCase().includes(search.toLowerCase())) &&
-             (!colorFilt || p.colors.includes(colorFilt)) &&
              (!sizeFilt || p.sizes.includes(sizeFilt)) &&
              (p.rating >= ratingFilt);
     });
-  }, [products, catFilt, priceFilt, search, colorFilt, sizeFilt, ratingFilt]);
+  }, [products, catFilt, priceFilt, sizeFilt, ratingFilt]);
 
   // --- Cart/Wishlist/Compare Handlers ---
   const handleAddToCart = (p: Product, e?: React.MouseEvent) => {
@@ -444,14 +435,14 @@ const App = () => {
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {cart.map(item => (
                 <div key={item.id} className="flex gap-4 border-b pb-4">
-                  <img src={item.image} className="w-16 h-20 object-cover" />
+                  <img src={item.image} alt={item.name} className="w-16 h-20 object-cover" />
                   <div className="flex-1">
                     <h4 className="text-xs font-bold uppercase">{item.name}</h4>
                     <p className="text-blue-600 font-bold">${item.price}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <button onClick={() => setCart(prev => prev.map(i => i.id === item.id ? {...i, quantity: Math.max(1, i.quantity - 1)} : i))} className="p-1 border"><Minus size={10}/></button>
+                      <button title="Decrease quantity" onClick={() => setCart(prev => prev.map(i => i.id === item.id ? {...i, quantity: Math.max(1, i.quantity - 1)} : i))} className="p-1 border"><Minus size={10}/></button>
                       <span className="text-xs">{item.quantity}</span>
-                      <button onClick={() => setCart(prev => prev.map(i => i.id === item.id ? {...i, quantity: i.quantity + 1} : i))} className="p-1 border"><Plus size={10}/></button>
+                      <button title="Increase quantity" onClick={() => setCart(prev => prev.map(i => i.id === item.id ? {...i, quantity: i.quantity + 1} : i))} className="p-1 border"><Plus size={10}/></button>
                     </div>
                   </div>
                 </div>
@@ -488,7 +479,7 @@ const App = () => {
                 const p = products.find(x => x.id === id)!;
                 return (
                   <div key={id} className="p-6 text-center border-r last:border-0 relative">
-                    <div className="h-40 mb-16"><img src={p.image} className="w-32 h-32 object-cover mx-auto mb-2" /><p className="font-bold text-xs">{p.name}</p></div>
+                    <div className="h-40 mb-16"><img src={p.image} alt={p.name} className="w-32 h-32 object-cover mx-auto mb-2" /><p className="font-bold text-xs">{p.name}</p></div>
                     <div className="mb-16 font-black text-blue-600">${p.price}</div>
                     <div className="mb-16 text-xs">{p.category}</div>
                     <div className="mb-16 flex justify-center text-orange-400"><Star size={14} fill="currentColor"/> {p.rating}</div>
@@ -509,8 +500,8 @@ const App = () => {
                 const p = products.find(x => x.id === id)!;
                 return (
                   <div key={id} className="border p-4 relative group">
-                    <button onClick={() => setWishlist(w => w.filter(i => i !== id))} className="absolute top-2 right-2 text-slate-300 hover:text-red-500"><X size={18}/></button>
-                    <img src={p.image} className="w-full aspect-square object-cover mb-4" />
+                    <button title="Remove from wishlist" onClick={() => setWishlist(w => w.filter(i => i !== id))} className="absolute top-2 right-2 text-slate-300 hover:text-red-500"><X size={18}/></button>
+                    <img src={p.image} alt={p.name} className="w-full aspect-square object-cover mb-4" />
                     <h4 className="font-bold text-sm mb-2">{p.name}</h4>
                     <button onClick={() => handleAddToCart(p)} className="w-full bg-blue-600 text-white py-2 text-xs font-bold">MOVE TO CART</button>
                   </div>
@@ -585,12 +576,12 @@ const App = () => {
                     <button onClick={() => setViewMode('grid')} className={`p-2 ${viewMode === 'grid' ? 'text-blue-600' : 'text-slate-400'}`} aria-label="Grid view"><LayoutGrid size={18} /></button>
                     <button onClick={() => setViewMode('list')} className={`p-2 ${viewMode === 'list' ? 'text-blue-600' : 'text-slate-400'}`} aria-label="List view"><List size={18} /></button>
                   </div>
-                  <select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))} className="border px-3 py-1 text-sm">
+                  <select value={itemsPerPage} onChange={(e) => setItemsPerPage(Number(e.target.value))} title="Items per page" className="border px-3 py-1 text-sm">
                     <option value={12}>Show 12</option>
                     <option value={24}>Show 24</option>
                     <option value={36}>Show 36</option>
                   </select>
-                  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="border px-3 py-1 text-sm">
+                  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} title="Sort by" className="border px-3 py-1 text-sm">
                     <option value="default">Default sorting</option>
                     <option value="price-low">Price: Low to High</option>
                     <option value="price-high">Price: High to Low</option>
@@ -636,9 +627,21 @@ const App = () => {
                       </div>
                       {p.colors.length > 0 && (
                         <div className="flex gap-1">
-                          {p.colors.slice(0, 3).map(color => (
-                            <div key={color} className="w-4 h-4 rounded-full border border-slate-300" style={{ backgroundColor: color }} />
-                          ))}
+                          {p.colors.slice(0, 3).map(color => {
+                            const colorMap: {[key: string]: string} = {
+                              'red': 'bg-red-500',
+                              'blue': 'bg-blue-500',
+                              'black': 'bg-black',
+                              'white': 'bg-white',
+                              'green': 'bg-green-500',
+                              'yellow': 'bg-yellow-500',
+                              'purple': 'bg-purple-500',
+                              'orange': 'bg-orange-500',
+                              'pink': 'bg-pink-500',
+                              'gray': 'bg-gray-500'
+                            };
+                            return <div key={color} className={`w-4 h-4 rounded-full border border-slate-300 ${colorMap[color.toLowerCase()] || 'bg-gray-300'}`} />;
+                          })}
                         </div>
                       )}
                     </div>
@@ -686,7 +689,7 @@ const App = () => {
 
                 <div className="flex gap-4">
                   <button onClick={() => handleAddToCart(selectedProduct)} className="flex-1 bg-blue-600 text-white py-5 font-black uppercase tracking-widest hover:bg-slate-900 transition">ADD TO CART</button>
-                  <button className="px-6 border"><Heart size={20}/></button>
+                  <button title="Add to wishlist" className="px-6 border"><Heart size={20}/></button>
                 </div>
 
                 {/* REVIEWS SECTION */}

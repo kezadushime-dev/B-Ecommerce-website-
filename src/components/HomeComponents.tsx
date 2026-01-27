@@ -4,14 +4,6 @@ import { Autoplay, Navigation } from 'swiper/modules';
 import { ProductCard } from './productCard';
 import { ShoppingCart, Eye } from 'lucide-react';
 
-interface FashionProduct {
-  id: number;
-  name: string;
-  price: string;
-  discount?: string;
-  image: string;
-}
-
 export const Hero: React.FC = () => {
   const heroImages = [
     "https://i.pinimg.com/1200x/ef/e5/6b/efe56bc0d50e3e4d4d96a9bad6f61da0.jpg",
@@ -267,20 +259,21 @@ export const ProductSection: React.FC = () => {
       <div className="relative">
         <Swiper
           modules={[Navigation]}
-          spaceBetween={180}
+          spaceBetween={15}
           slidesPerView={1}
+          dir="rtl"
           breakpoints={{
             640: {
-              slidesPerView: 2,
+              slidesPerView: 1,
             },
             768: {
-              slidesPerView: 3,
+              slidesPerView: 1,
             },
             1024: {
-              slidesPerView: 4,
+              slidesPerView: 1,
             },
             1280: {
-              slidesPerView: 8,
+              slidesPerView: 1,
             },
           }}
           navigation={{
@@ -289,11 +282,13 @@ export const ProductSection: React.FC = () => {
           }}
           className="featured-products-slider"
         >
-          {featuredProducts.map(product => (
-            <SwiperSlide key={product.id} className="flex-shrink-0 w-auto">
-              <ProductCard {...product} />
-            </SwiperSlide>
-          ))}
+          <SwiperSlide key="featured" className="flex gap-4 w-full">
+            {featuredProducts.map(product => (
+              <div key={product.id} className="flex-shrink-0 w-auto">
+                <ProductCard {...product} />
+              </div>
+            ))}
+          </SwiperSlide>
         </Swiper>
         <button className="swiper-button-prev-featured absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors" aria-label="Previous products"></button>
         <button className="swiper-button-next-featured absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-lg rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors" aria-label="Next products"></button>
