@@ -5,6 +5,8 @@ import {
   ArrowLeft, X, Scale, Plus, Minus, Send
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useQuery } from "@tanstack/react-query";
+import { getProducts } from "../services/product.service";
 
 // --- Types ---
 interface Review {
@@ -36,314 +38,29 @@ interface CartItem extends Product {
   quantity: number;
 }
 
-// --- MASSIVE DATASET ---
-const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: 1, name: "Men Hooded Navy & Grey T-Shirt", category: "T-Shirts",
-    price: 70.00, originalPrice: 95.00, rating: 5, reviews: 1,
-    colors: ['navy', 'grey'], sizes: ['S', 'M', 'L', 'XL'],
-    image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=500",
-    isFeatured: true, description: "70% cotton, 30% polyester. Easy to wear and versatile.",
-    weight: "250g", material: "Cotton Blend",
-    userReviews: [{ username: "John Doe", rating: 5, comment: "Excellent fit!", date: "2024-05-01" }]
-  },
-  {
-    id: 2, name: "Premium Silver Analog Watch", category: "Watches",
-    price: 49.00, originalPrice: 85.00, rating: 4, reviews: 1,
-    colors: ['silver', 'black'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=500",
-    isFeatured: false, description: "Water-resistant stainless steel casing.",
-    weight: "150g", material: "Steel", userReviews: []
-  },
-  {
-    id: 3, name: "Women Silk Blouson Top", category: "Women",
-    price: 47.00, rating: 3, reviews: 1, colors: ['white', 'pink'], sizes: ['S', 'M'],
-    image: "https://images.unsplash.com/photo-1564584217132-2271feaeb3c5?q=80&w=500",
-    isFeatured: true, description: "Soft silk fabric with floral prints.",
-    weight: "120g", material: "Silk", userReviews: []
-  },
-  {
-    id: 4, name: "Classic Aviator Sunglasses", category: "Accessories",
-    price: 35.00, rating: 5, reviews: 10, colors: ['gold', 'black'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=500",
-    isFeatured: false, description: "UV400 Protection with metal frames.",
-    weight: "30g", material: "Metal", userReviews: []
-  },
-  {
-    id: 5, name: "Leather Travel Duffle Bag", category: "Bags",
-    price: 150.00, rating: 4.5, reviews: 8, colors: ['brown', 'tan'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1547949003-9792a18a2601?q=80&w=500",
-    isFeatured: false, description: "Handcrafted genuine leather bag.",
-    weight: "1.2kg", material: "Leather", userReviews: []
-  },
-  {
-    id: 6, name: "Blue Skinny Stretch Jeans", category: "Men",
-    price: 65.00, rating: 4, reviews: 4, colors: ['blue'], sizes: ['30', '32', '34'],
-    image: "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=500",
-    isFeatured: false, description: "High-quality stretch denim.",
-    weight: "600g", material: "Denim", userReviews: []
-  },
-  {
-    id: 7, name: "Urban Knit Sneakers", category: "Shoes",
-    price: 89.00, rating: 5, reviews: 15, colors: ['black', 'grey'], sizes: ['8', '9', '10'],
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=500",
-    isFeatured: true, description: "Breathable mesh upper with foam sole.",
-    weight: "400g", material: "Mesh", userReviews: []
-  },
-  {
-    id: 8, name: "Vintage Graphic Tee", category: "T-Shirts",
-    price: 55.00, originalPrice: 75.00, rating: 4.5, reviews: 12,
-    colors: ['white', 'black'], sizes: ['S', 'M', 'L', 'XL'],
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=500",
-    isFeatured: false, description: "Retro-inspired graphic print on soft cotton.",
-    weight: "200g", material: "Cotton", userReviews: []
-  },
-  {
-    id: 9, name: "Athletic Performance Shirt", category: "T-Shirts",
-    price: 45.00, rating: 4, reviews: 8, colors: ['blue', 'red'], sizes: ['S', 'M', 'L'],
-    image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?q=80&w=500",
-    isFeatured: false, description: "Moisture-wicking fabric for active lifestyles.",
-    weight: "180g", material: "Polyester", userReviews: []
-  },
-  {
-    id: 10, name: "Casual Polo Shirt", category: "T-Shirts",
-    price: 60.00, rating: 4.2, reviews: 6, colors: ['green', 'navy'], sizes: ['M', 'L', 'XL'],
-    image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?q=80&w=500",
-    isFeatured: false, description: "Classic polo design with breathable fabric.",
-    weight: "220g", material: "Cotton Blend", userReviews: []
-  },
-  {
-    id: 11, name: "Digital Smartwatch", category: "Watches",
-    price: 199.00, originalPrice: 299.00, rating: 4.8, reviews: 25,
-    colors: ['black', 'silver'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1544117519-31a4b719223d?q=80&w=500",
-    isFeatured: true, description: "Fitness tracking and smart notifications.",
-    weight: "50g", material: "Plastic", userReviews: []
-  },
-  {
-    id: 12, name: "Luxury Gold Watch", category: "Watches",
-    price: 350.00, rating: 5, reviews: 18, colors: ['gold'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=500",
-    isFeatured: false, description: "Elegant gold-plated timepiece.",
-    weight: "120g", material: "Gold Plated", userReviews: []
-  },
-  {
-    id: 13, name: "Sport Chronograph Watch", category: "Watches",
-    price: 120.00, rating: 4.3, reviews: 14, colors: ['black', 'blue'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=500",
-    isFeatured: false, description: "Durable chronograph for sports enthusiasts.",
-    weight: "180g", material: "Stainless Steel", userReviews: []
-  },
-  {
-    id: 14, name: "Elegant Evening Dress", category: "Women",
-    price: 120.00, originalPrice: 180.00, rating: 4.7, reviews: 22,
-    colors: ['black', 'red'], sizes: ['S', 'M', 'L'],
-    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=500",
-    isFeatured: true, description: "Flowing chiffon dress for special occasions.",
-    weight: "300g", material: "Chiffon", userReviews: []
-  },
-  {
-    id: 15, name: "Casual Summer Skirt", category: "Women",
-    price: 40.00, rating: 4, reviews: 9, colors: ['yellow', 'blue'], sizes: ['S', 'M'],
-    image: "https://images.unsplash.com/photo-1583496661160-fb5886a6aaaa?q=80&w=500",
-    isFeatured: false, description: "Light and airy skirt for warm weather.",
-    weight: "150g", material: "Cotton", userReviews: []
-  },
-  {
-    id: 16, name: "Professional Blazer", category: "Women",
-    price: 150.00, rating: 4.5, reviews: 16, colors: ['grey', 'black'], sizes: ['M', 'L'],
-    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=500",
-    isFeatured: false, description: "Tailored blazer for office wear.",
-    weight: "500g", material: "Wool Blend", userReviews: []
-  },
-  {
-    id: 17, name: "Leather Belt", category: "Accessories",
-    price: 45.00, rating: 4.2, reviews: 11, colors: ['brown', 'black'], sizes: ['S', 'M', 'L'],
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=500",
-    isFeatured: false, description: "Genuine leather belt with classic buckle.",
-    weight: "100g", material: "Leather", userReviews: []
-  },
-  {
-    id: 18, name: "Silk Scarf", category: "Accessories",
-    price: 65.00, originalPrice: 90.00, rating: 4.8, reviews: 19,
-    colors: ['multicolor'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1601762603332-db5e4b2ccb55?q=80&w=500",
-    isFeatured: false, description: "Luxurious silk scarf with intricate patterns.",
-    weight: "50g", material: "Silk", userReviews: []
-  },
-  {
-    id: 19, name: "Baseball Cap", category: "Accessories",
-    price: 25.00, rating: 4, reviews: 7, colors: ['navy', 'black'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=500",
-    isFeatured: false, description: "Adjustable cap for casual outings.",
-    weight: "80g", material: "Cotton", userReviews: []
-  },
-  {
-    id: 20, name: "Tote Bag", category: "Bags",
-    price: 80.00, rating: 4.4, reviews: 13, colors: ['beige', 'black'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=500",
-    isFeatured: false, description: "Spacious canvas tote for everyday use.",
-    weight: "300g", material: "Canvas", userReviews: []
-  },
-  {
-    id: 21, name: "Backpack", category: "Bags",
-    price: 95.00, originalPrice: 120.00, rating: 4.6, reviews: 21,
-    colors: ['grey', 'blue'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=500",
-    isFeatured: false, description: "Durable backpack with multiple compartments.",
-    weight: "800g", material: "Nylon", userReviews: []
-  },
-  {
-    id: 22, name: "Crossbody Bag", category: "Bags",
-    price: 70.00, rating: 4.3, reviews: 10, colors: ['red', 'black'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=500",
-    isFeatured: false, description: "Stylish crossbody bag for hands-free carrying.",
-    weight: "250g", material: "Leather", userReviews: []
-  },
-  {
-    id: 23, name: "Chinos Pants", category: "Men",
-    price: 75.00, rating: 4.1, reviews: 12, colors: ['khaki', 'navy'], sizes: ['30', '32', '34'],
-    image: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=500",
-    isFeatured: false, description: "Comfortable chinos for casual wear.",
-    weight: "450g", material: "Cotton", userReviews: []
-  },
-  {
-    id: 24, name: "Formal Shirt", category: "Men",
-    price: 85.00, originalPrice: 110.00, rating: 4.5, reviews: 15,
-    colors: ['white', 'blue'], sizes: ['M', 'L', 'XL'],
-    image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=500",
-    isFeatured: false, description: "Crisp formal shirt for professional settings.",
-    weight: "280g", material: "Cotton", userReviews: []
-  },
-  {
-    id: 25, name: "Hoodie", category: "Men",
-    price: 90.00, rating: 4.7, reviews: 20, colors: ['grey', 'black'], sizes: ['S', 'M', 'L'],
-    image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=500",
-    isFeatured: true, description: "Cozy hoodie with kangaroo pocket.",
-    weight: "600g", material: "Fleece", userReviews: []
-  },
-  {
-    id: 26, name: "Running Shoes", category: "Shoes",
-    price: 120.00, originalPrice: 150.00, rating: 4.9, reviews: 30,
-    colors: ['white', 'black'], sizes: ['8', '9', '10', '11'],
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=500",
-    isFeatured: true, description: "Lightweight running shoes with cushioning.",
-    weight: "350g", material: "Mesh", userReviews: []
-  },
-  {
-    id: 27, name: "Boots", category: "Shoes",
-    price: 140.00, rating: 4.4, reviews: 18, colors: ['brown', 'black'], sizes: ['8', '9', '10'],
-    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=500",
-    isFeatured: false, description: "Durable leather boots for all terrains.",
-    weight: "900g", material: "Leather", userReviews: []
-  },
-  {
-    id: 28, name: "Sandals", category: "Shoes",
-    price: 50.00, rating: 4, reviews: 8, colors: ['tan', 'black'], sizes: ['8', '9', '10'],
-    image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=500",
-    isFeatured: false, description: "Comfortable sandals for summer days.",
-    weight: "200g", material: "Rubber", userReviews: []
-  },
-  {
-    id: 29, name: "Wireless Headphones", category: "Electronics",
-    price: 150.00, originalPrice: 200.00, rating: 4.6, reviews: 35,
-    colors: ['black', 'white'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=500",
-    isFeatured: true, description: "Noise-cancelling wireless headphones.",
-    weight: "250g", material: "Plastic", userReviews: []
-  },
-  {
-    id: 30, name: "Smartphone", category: "Electronics",
-    price: 699.00, rating: 4.8, reviews: 50, colors: ['black', 'blue'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500",
-    isFeatured: true, description: "Latest smartphone with advanced features.",
-    weight: "180g", material: "Glass", userReviews: []
-  },
-  {
-    id: 31, name: "Laptop", category: "Electronics",
-    price: 1200.00, originalPrice: 1500.00, rating: 4.7, reviews: 40,
-    colors: ['silver', 'black'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=500",
-    isFeatured: false, description: "Powerful laptop for work and entertainment.",
-    weight: "1.5kg", material: "Aluminum", userReviews: []
-  },
-  {
-    id: 32, name: "Coffee Maker", category: "Home & Kitchen",
-    price: 80.00, rating: 4.3, reviews: 22, colors: ['black', 'silver'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=500",
-    isFeatured: false, description: "Automatic coffee maker for perfect brews.",
-    weight: "2kg", material: "Plastic", userReviews: []
-  },
-  {
-    id: 33, name: "Blender", category: "Home & Kitchen",
-    price: 60.00, originalPrice: 80.00, rating: 4.5, reviews: 28,
-    colors: ['white', 'black'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=500",
-    isFeatured: false, description: "High-speed blender for smoothies and more.",
-    weight: "1.2kg", material: "Plastic", userReviews: []
-  },
-  {
-    id: 34, name: "Cookware Set", category: "Home & Kitchen",
-    price: 200.00, rating: 4.6, reviews: 15, colors: ['silver'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=500",
-    isFeatured: false, description: "Non-stick cookware set for healthy cooking.",
-    weight: "3kg", material: "Aluminum", userReviews: []
-  },
-  {
-    id: 35, name: "Yoga Mat", category: "Sports",
-    price: 40.00, rating: 4.4, reviews: 25, colors: ['purple', 'blue'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=500",
-    isFeatured: false, description: "Non-slip yoga mat for comfortable practice.",
-    weight: "1kg", material: "Rubber", userReviews: []
-  },
-  {
-    id: 36, name: "Dumbbells Set", category: "Sports",
-    price: 100.00, originalPrice: 130.00, rating: 4.7, reviews: 32,
-    colors: ['black'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=500",
-    isFeatured: false, description: "Adjustable dumbbells for home workouts.",
-    weight: "10kg", material: "Iron", userReviews: []
-  },
-  {
-    id: 37, name: "Basketball", category: "Sports",
-    price: 30.00, rating: 4.2, reviews: 18, colors: ['orange'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?q=80&w=500",
-    isFeatured: false, description: "Official size basketball for indoor/outdoor play.",
-    weight: "600g", material: "Rubber", userReviews: []
-  },
-  {
-    id: 38, name: "Lipstick", category: "Beauty",
-    price: 20.00, rating: 4.5, reviews: 40, colors: ['red', 'pink'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?q=80&w=500",
-    isFeatured: false, description: "Long-lasting matte lipstick.",
-    weight: "10g", material: "Wax", userReviews: []
-  },
-  {
-    id: 39, name: "Skincare Set", category: "Beauty",
-    price: 75.00, originalPrice: 100.00, rating: 4.8, reviews: 55,
-    colors: ['neutral'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=500",
-    isFeatured: true, description: "Complete skincare routine for glowing skin.",
-    weight: "200g", material: "Various", userReviews: []
-  },
-  {
-    id: 40, name: "Perfume", category: "Beauty",
-    price: 90.00, rating: 4.6, reviews: 30, colors: ['clear'], sizes: ['OS'],
-    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?q=80&w=500",
-    isFeatured: false, description: "Elegant fragrance for everyday wear.",
-    weight: "150g", material: "Liquid", userReviews: []
-  }
-];
 
-const App = () => {
+
+const ProductPage = () => {
   const [searchParams] = useSearchParams();
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  const { data: fetchedProducts, isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: getProducts,
+  });
+
+  const [products, setProducts] = useState<Product[]>([]);
   const [view, setView] = useState<'shop' | 'wishlist' | 'compare'>('shop');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [compareList, setCompareList] = useState<number[]>([]);
   const { addToCart } = useCart();
+
+  // Update products when fetched from database
+  useEffect(() => {
+    if (fetchedProducts?.products) {
+      setProducts(fetchedProducts.products);
+    }
+  }, [fetchedProducts]);
 
   // Filter States
   const [catFilt, setCatFilt] = useState('All');
@@ -699,4 +416,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default ProductPage;

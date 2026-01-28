@@ -1,6 +1,4 @@
-# TODO: Integrate Cart in product.tsx with Global CartContext and Add Remove Button
+# TODO: Fix CategoryApi Import Error
 
-## Tasks:
-- [x] Update product.tsx to use CartContext instead of local cart state
-- [x] Add remove button to cart slider in Header.tsx
-- [x] Test cart functionality across pages
+- [x] Create category.service.tsx in src/services/ with getCategories function
+- [x] Update import in src/pages/category.tsx to use category.service instead of CategoryApi

@@ -4,7 +4,7 @@ import { Modal } from '../modal/modal';
 
 interface ProductProps {
   name: string;
-  category: string;
+  category: string | { name: string };
   price: number;
   oldPrice?: number;
   rating: number;
@@ -58,7 +58,7 @@ export const ProductCard: React.FC<ProductProps> = ({ name, category, price, old
 
         {/* Product Info */}
         <div className="pt-4 flex flex-col items-start">
-          <span className="text-gray-400 text-[11px] uppercase font-bold mb-1">{category}</span>
+          <span className="text-gray-400 text-[11px] uppercase font-bold mb-1">{typeof category === 'string' ? category : category.name}</span>
           <h3 className="text-sm font-bold text-slate-800 hover:text-blue-600 cursor-pointer transition-colors mb-2">
             {name}
           </h3>

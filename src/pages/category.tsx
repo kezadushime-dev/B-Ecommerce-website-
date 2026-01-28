@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCategories } from "../services/CategoryApi";
+import { getCategories } from "../services/category.service";
 import type { Category } from "../Types/category";
 
 const CategoryPage = () => {
