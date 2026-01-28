@@ -4,6 +4,7 @@ import {
   Heart, ChevronDown, Star, LayoutGrid, List,
   ArrowLeft, X, Scale, Plus, Minus, Send
 } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 // --- Types ---
 interface Review {
@@ -13,7 +14,7 @@ interface Review {
   date: string;
 }
 
-interface Product {
+ export interface Product {
   id: number;
   name: string;
   category: string;
@@ -339,11 +340,10 @@ const App = () => {
   const [products, setProducts] = useState(INITIAL_PRODUCTS);
   const [view, setView] = useState<'shop' | 'wishlist' | 'compare'>('shop');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [compareList, setCompareList] = useState<number[]>([]);
+  const { addToCart } = useCart();
 
   // Filter States
   const [catFilt, setCatFilt] = useState('All');
@@ -397,11 +397,7 @@ const App = () => {
   // --- Cart/Wishlist/Compare Handlers ---
   const handleAddToCart = (p: Product, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    setCart(prev => {
-      const item = prev.find(i => i.id === p.id);
-      return item ? prev.map(i => i.id === p.id ? {...i, quantity: i.quantity + 1} : i) : [...prev, {...p, quantity: 1}];
-    });
-    setIsCartOpen(true);
+    addToCart(p);
   };
 
   const submitReview = () => {
@@ -422,39 +418,6 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
-      
-      {/* --- SLIDE CART --- */}
-      {isCartOpen && (
-        <div className="fixed inset-0 z-[100] flex justify-end">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
-          <div className="relative w-full max-w-sm bg-white h-full shadow-xl flex flex-col animate-in slide-in-from-right duration-300">
-            <div className="p-6 border-b flex justify-between items-center bg-slate-50">
-              <h2 className="font-black text-lg uppercase">Your Cart ({cart.length})</h2>
-              <X className="cursor-pointer" onClick={() => setIsCartOpen(false)} />
-            </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {cart.map(item => (
-                <div key={item.id} className="flex gap-4 border-b pb-4">
-                  <img src={item.image} alt={item.name} className="w-16 h-20 object-cover" />
-                  <div className="flex-1">
-                    <h4 className="text-xs font-bold uppercase">{item.name}</h4>
-                    <p className="text-blue-600 font-bold">${item.price}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <button title="Decrease quantity" onClick={() => setCart(prev => prev.map(i => i.id === item.id ? {...i, quantity: Math.max(1, i.quantity - 1)} : i))} className="p-1 border"><Minus size={10}/></button>
-                      <span className="text-xs">{item.quantity}</span>
-                      <button title="Increase quantity" onClick={() => setCart(prev => prev.map(i => i.id === item.id ? {...i, quantity: i.quantity + 1} : i))} className="p-1 border"><Plus size={10}/></button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="p-6 border-t font-black bg-white">
-              <div className="flex justify-between mb-4"><span>Subtotal:</span><span>${cart.reduce((a, b) => a + (b.price * b.quantity), 0).toFixed(2)}</span></div>
-              <button className="w-full bg-blue-600 text-white py-4 hover:bg-black transition">CHECKOUT</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* --- HEADER --- */}
       {!selectedProduct && (

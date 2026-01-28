@@ -6,34 +6,35 @@ import { ShoppingCart, Eye } from 'lucide-react';
 
 export const Hero: React.FC = () => {
   const heroImages = [
-    "https://i.pinimg.com/1200x/ef/e5/6b/efe56bc0d50e3e4d4d96a9bad6f61da0.jpg",
-    "https://i.pinimg.com/736x/70/91/91/709191a7ab0f0c0df873c17146ce2237.jpg",
-    "https://i.pinimg.com/736x/7f/8a/9b/7f8a9b8c4d5e6f7a8b9c0d1e2f3a4b5c.jpg",
-    "https://i.pinimg.com/736x/be/0c/65/be0c65f0452e6119511f96c129965509.jpg",
-    "https://i.pinimg.com/736x/22/b3/4d/22b34d2ee7def7b9e9dbdac6d9f027eb.jpg"
+    "https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=1200&h=550&fit=crop",
+    "https://images.pexels.com/photos/5926382/pexels-photo-5926382.jpeg?auto=compress&cs=tinysrgb&w=1200&h=550&fit=crop",
+    "https://images.pexels.com/photos/5928129/pexels-photo-5928129.jpeg?auto=compress&cs=tinysrgb&w=1200&h=550&fit=crop",
+    "https://images.pexels.com/photos/5632398/pexels-photo-5632398.jpeg?auto=compress&cs=tinysrgb&w=1200&h=550&fit=crop",
+    "https://images.pexels.com/photos/5926396/pexels-photo-5926396.jpeg?auto=compress&cs=tinysrgb&w=1200&h=550&fit=crop"
   ];
 
   return (
     <section className="container mx-auto px-4 py-6">
       <div className="grid grid-cols-12 gap-4 h-[550px]">
-        <div className="col-span-12 md:col-span-8 rounded-sm overflow-hidden relative group">
+        <div className="col-span-8 rounded-sm overflow-hidden relative group h-full bg-gradient-to-r from-blue-600 to-blue-400">
           <Swiper
             modules={[Autoplay]}
             autoplay={{ delay: 3000, disableOnInteraction: false }}
             loop={true}
-            className="h-full"
+            className="w-full h-full"
           >
             {heroImages.map((src, index) => (
-              <SwiperSlide key={index}>
-                <div className="relative h-full w-full">
+              <SwiperSlide key={index} className="h-full w-full flex">
+                <div className="relative h-full w-full flex-1">
                   <img
                     src={src}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105"
                     alt={`Hero ${index + 1}`}
+                    loading="eager"
                   />
-                  <div className="absolute inset-0 bg-black/5 flex flex-col justify-center pl-16">
-                    <span className="text-blue-600 font-bold uppercase tracking-widest mb-2 text-xs">New Season</span>
-                    <h2 className="text-5xl font-bold text-slate-900 mb-6 leading-tight">SUMMER <br/> COLLECTION</h2>
+                  <div className="absolute inset-0 bg-black/20 flex flex-col justify-center pl-16 z-10">
+                    <span className="text-white font-bold uppercase tracking-widest mb-2 text-xs drop-shadow-lg">New Season</span>
+                    <h2 className="text-5xl font-bold text-white mb-6 leading-tight drop-shadow-lg">SUMMER <br/> COLLECTION</h2>
                     <button className="bg-blue-600 text-white font-bold px-10 py-4 w-max uppercase text-xs hover:bg-black transition-all duration-300 shadow-lg" aria-label="Shop Summer Collection">
                       Shop Now
                     </button>
@@ -44,7 +45,7 @@ export const Hero: React.FC = () => {
           </Swiper>
         </div>
 
-        <div className="col-span-12 md:col-span-4 flex flex-col gap-4">
+        <div className="col-span-4 flex flex-col gap-4">
           <div className="flex-1 relative group overflow-hidden">
             <img src="https://i.pinimg.com/736x/70/91/91/709191a7ab0f0c0df873c17146ce2237.jpg" className="absolute inset-0 w-full h-full object-cover" alt="White Sneakers" />
             <div className="absolute inset-0 bg-black/30 flex items-center p-8">
