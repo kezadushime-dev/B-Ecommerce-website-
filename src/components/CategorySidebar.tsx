@@ -1,15 +1,12 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Grid } from 'swiper/modules';
 import { ChevronLeft, ChevronRight, ShoppingCart, Eye } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getCategories } from '../services/category.service';
+import type { Category } from '../Types/category';
 
-const categories = [
-  { name: "Men", img: "https://i.pinimg.com/1200x/b9/44/75/b94475bddf2e7c451335ad341b39ebca.jpg" },
-  { name: "Women", img: "https://i.pinimg.com/1200x/99/20/d8/9920d86bdb387622f9b2f3a9c1306578.jpg" },
-  { name: "Shoes", img: "https://i.pinimg.com/1200x/70/91/91/709191a7ab0f0c0df873c17146ce2237.jpg" },
-  { name: "Bags", img: "https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=200" },
-  { name: "Watches", img: "https://images.pexels.com/photos/277390/pexels-photo-277390.jpeg?auto=compress&cs=tinysrgb&w=200" },
-  { name: "Jewellery", img: "https://images.pexels.com/photos/1458867/pexels-photo-1458867.jpeg?auto=compress&cs=tinysrgb&w=200" },
-];
+const defaultImg = "https://i.pinimg.com/736x/99/07/d0/9907d06aefd20069d74a159a5e6251ab.jpg"; // Default image for categories
 
 const products = [
   { id: 1, name: "Men Hooded Navy Blue...", price: "$70.00–$95.00", discount: "19% OFF", image: "https://i.pinimg.com/736x/be/0c/65/be0c65f0452e6119511f96c129965509.jpg" },
@@ -19,6 +16,30 @@ const products = [
 ];
 
 export const CategorySidebar = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getCategories()
+      .then((data) => {
+        setCategories(data);
+        setLoading(false);
+      })
+      .catch((err: Error) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleCategoryClick = () => {
+    navigate('/categories');
+  };
+
+  if (loading) return <p>Loading categories...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
     <div className="container mx-auto px-4 py-10">
       <div className="flex flex-col lg:flex-row gap-8">
@@ -26,10 +47,10 @@ export const CategorySidebar = () => {
         <div className="lg:w-3/5">
           <h3 className="text-xl font-bold mb-6">Shop by Category</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {categories.map((cat, i) => (
-              <div key={i} className="flex flex-col items-center group cursor-pointer">
+            {categories.map((cat) => (
+              <div key={cat.id} className="flex flex-col items-center group cursor-pointer" onClick={handleCategoryClick}>
                 <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border border-gray-100 mb-3 transition-all duration-300 group-hover:shadow-lg group-hover:border-blue-500">
-                  <img src={cat.img} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img src={defaultImg} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
                 <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">{cat.name}</span>
               </div>

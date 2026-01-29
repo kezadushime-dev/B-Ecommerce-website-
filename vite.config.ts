@@ -9,4 +9,13 @@ export default defineConfig({
     tailwindcss(), // 2. Add it to the plugins array
   ],
   base: process.env.VITE_BASE_PATH || "//Ecommerce-new",
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
+  },
 })

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, Eye, EyeOff } from 'lucide-react';
+import { login, register } from '../services/auth';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -9,6 +11,48 @@ interface LoginModalProps {
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', profileImage: '' });
+  const [loginError, setLoginError] = useState('');
+  const [loginSuccess, setLoginSuccess] = useState('');
+  const [registerError, setRegisterError] = useState('');
+  const [registerSuccess, setRegisterSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setLoginError('');
+    try {
+      await login({ email: loginData.email, password: loginData.password });
+      setLoginError('');
+      setLoginSuccess('Login successful!');
+      setTimeout(() => {
+        onClose();
+        navigate('/');
+      }, 1000);
+    } catch (error: any) {
+      setLoginError(error.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setRegisterError('');
+    setRegisterSuccess('');
+    try {
+      await register(registerData);
+      setRegisterSuccess('Registration successful! Check your email for password.');
+    } catch (error: any) {
+      setRegisterError(error.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -18,6 +62,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          title="Close modal"
         >
           <X size={20} />
         </button>
@@ -49,13 +94,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               <p className="text-gray-500 text-sm">Get access to your Orders, Wishlist and Recommendations.</p>
             </div>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleLoginSubmit}>
               <div>
                 <input
                   type="text"
                   placeholder="Username/Email address"
                   name="username"
+                  value={loginData.email}
+                  onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                   className="w-full border border-gray-200 p-4 text-sm focus:border-blue-600 outline-none transition-all"
+                  required
                 />
               </div>
 
@@ -64,7 +112,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   name="password"
+                  value={loginData.password}
+                  onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                   className="w-full border border-gray-200 p-4 pr-12 text-sm focus:border-blue-600 outline-none transition-all"
+                  required
                 />
                 <button
                   type="button"
@@ -74,6 +125,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+
+
+
+              {loginError && <p className="text-red-500 text-sm">{loginError}</p>}
 
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -85,9 +140,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white font-black py-4 uppercase text-sm tracking-wider hover:bg-black transition-all"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white font-black py-4 uppercase text-sm tracking-wider hover:bg-black transition-all disabled:opacity-50"
               >
-                LOG IN
+                {loading ? 'Logging in...' : 'LOG IN'}
               </button>
             </form>
           </>
@@ -98,31 +154,38 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               <p className="text-gray-500 text-sm">Create your account to get started.</p>
             </div>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleRegisterSubmit}>
               <div>
                 <input
                   type="text"
-                  placeholder="Full Name"
-                  name="fullname"
+                  placeholder="Username"
+                  name="username"
+                  value={registerData.username}
+                  onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
                   className="w-full border border-gray-200 p-4 text-sm focus:border-blue-600 outline-none transition-all"
+                  required
                 />
               </div>
-
               <div>
                 <input
                   type="email"
                   placeholder="Email address"
                   name="email"
+                  value={registerData.email}
+                  onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                   className="w-full border border-gray-200 p-4 text-sm focus:border-blue-600 outline-none transition-all"
+                  required
                 />
               </div>
-
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   name="password"
+                  value={registerData.password}
+                  onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
                   className="w-full border border-gray-200 p-4 pr-12 text-sm focus:border-blue-600 outline-none transition-all"
+                  required
                 />
                 <button
                   type="button"
@@ -132,26 +195,30 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-
-              <div className="relative">
+              <div>
                 <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  name="confirm_password"
+                  type="text"
+                  placeholder="Profile Image URL"
+                  name="profileImage"
+                  value={registerData.profileImage}
+                  onChange={(e) => setRegisterData({ ...registerData, profileImage: e.target.value })}
                   className="w-full border border-gray-200 p-4 text-sm focus:border-blue-600 outline-none transition-all"
                 />
               </div>
 
-              <div className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="terms" className="accent-blue-600" />
-                <span className="text-gray-600">I agree to the Terms & Conditions</span>
-              </div>
+              <p className="text-xs text-gray-400 leading-relaxed italic">
+                Your personal data will be used to support your experience throughout this website.
+              </p>
+
+              {registerError && <p className="text-red-500 text-sm">{registerError}</p>}
+              {registerSuccess && <p className="text-green-500 text-sm">{registerSuccess}</p>}
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white font-black py-4 uppercase text-sm tracking-wider hover:bg-black transition-all"
+                disabled={loading}
+                className="w-full bg-white border-2 border-blue-600 text-blue-600 font-black py-4 uppercase text-sm tracking-wider hover:bg-blue-600 hover:text-white transition-all disabled:opacity-50"
               >
-                SIGN UP
+                {loading ? 'Registering...' : 'SIGN UP'}
               </button>
             </form>
           </>

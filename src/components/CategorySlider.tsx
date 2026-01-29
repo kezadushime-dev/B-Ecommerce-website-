@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { getCategories } from '../services/category.service';
 import type { Category } from '../Types/category';
 
-const defaultImg = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=500"; // Default image for categories
+const defaultImg = "https://i.pinimg.com/736x/99/07/d0/9907d06aefd20069d74a159a5e6251ab.jpg"; // Default image for categories
 
 export const CategorySlider = () => {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export const CategorySlider = () => {
     <div className="container mx-auto px-4 py-10">
       <div className="flex flex-row gap-4 overflow-x-auto">
         {categories.map((cat) => (
-          <button key={cat.id} className="flex flex-col items-center group cursor-pointer flex-shrink-0 bg-transparent border-none p-0" onClick={() => handleCategoryClick(cat.name)}>
+          <button key={cat.name} className="flex flex-col items-center group cursor-pointer flex-shrink-0 bg-transparent border-none p-0" onClick={() => handleCategoryClick(cat.name)}>
             <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border border-gray-100 mb-3 transition-all duration-300 group-hover:shadow-lg group-hover:border-blue-500">
               <img src={defaultImg} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
             </div>

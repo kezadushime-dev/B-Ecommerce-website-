@@ -23,7 +23,7 @@ export const HomePage: React.FC = () => {
     <div>
       <Hero />
       <CategorySlider />
-      
+      Products
       {/* 4. Replace the static <ProductSection /> with your dynamic grid logic */}
       {/* We check loading here specifically so the rest of the page (Hero/Slider) is still visible */}
       {isLoading ? (

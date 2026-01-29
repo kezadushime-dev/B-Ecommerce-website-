@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LoginModal } from '../components/LoginModal';
+import { ProfileModal } from '../components/ProfileModal';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../hooks/useAuth';
 import { X, Minus, Plus } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const { user, isAuthenticated } = useAuth();
   const { cart, isCartOpen, setIsCartOpen, updateQuantity } = useCart();
 
   return (
@@ -46,11 +50,19 @@ export const Header: React.FC = () => {
 
           {/* Icons */}
           <div className="flex items-center gap-4 md:gap-6 text-white text-sm">
-            <button onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 hover:text-gray-200">
-              <span className="text-xl">👤</span>
-              <div className="leading-tight hidden md:block">HELLO, <br/><strong>SIGN IN</strong></div>
-              <div className="leading-tight md:hidden"><strong>SIGN IN</strong></div>
-            </button>
+            {isAuthenticated ? (
+              <button onClick={() => setIsProfileModalOpen(true)} className="flex items-center gap-2 hover:text-gray-200">
+                <span className="text-xl">👤</span>
+                <div className="leading-tight hidden md:block">HELLO, <br/><strong>{user?.name || 'USER'}</strong></div>
+                <div className="leading-tight md:hidden"><strong>{user?.name || 'USER'}</strong></div>
+              </button>
+            ) : (
+              <button onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 hover:text-gray-200">
+                <span className="text-xl">👤</span>
+                <div className="leading-tight hidden md:block">HELLO, <br/><strong>SIGN IN</strong></div>
+                <div className="leading-tight md:hidden"><strong>SIGN IN</strong></div>
+              </button>
+            )}
             <Link to="/wishlist" className="relative">
               <span className="text-xl">🤍</span>
               <span className="absolute -top-2 -right-2 bg-white text-blue-600 text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
@@ -82,6 +94,7 @@ export const Header: React.FC = () => {
       </div>
 
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+      <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />
 
       {/* --- SLIDE CART --- */}
       {isCartOpen && (

@@ -1,21 +1,45 @@
 import React, { useState } from 'react';
 import { Heart, Search, ArrowLeftRight, ShoppingCart, Star } from 'lucide-react';
 import { Modal } from '../modal/modal';
+import { useCart } from '../context/CartContext';
 
 interface ProductProps {
+  id: string;
   name: string;
   category: string | { name: string };
   price: number;
   oldPrice?: number;
   rating: number;
   reviewCount?: number;
-  image: string;
+  images: string[];
 }
 
-export const ProductCard: React.FC<ProductProps> = ({ name, category, price, oldPrice, rating, reviewCount, image }) => {
+export const ProductCard: React.FC<ProductProps> = ({ id, name, category, price, oldPrice, rating, reviewCount, images = [] }) => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const { addToCart } = useCart();
 
   const discountPercentage = oldPrice ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+
+  const handleAddToCart = () => {
+    const product = {
+      id: id,
+      name,
+      category: typeof category === 'string' ? category : category.name,
+      price,
+      originalPrice: oldPrice,
+      rating,
+      reviews: reviewCount || 0,
+      colors: [],
+      sizes: [],
+      image: images && images.length > 0 ? images[0] : '',
+      isFeatured: false,
+      description: '',
+      weight: '',
+      material: '',
+      userReviews: []
+    };
+    addToCart(product);
+  };
 
   return (
     <>
@@ -23,7 +47,7 @@ export const ProductCard: React.FC<ProductProps> = ({ name, category, price, old
         {/* Image Container */}
         <div className="relative w-64 h-80 overflow-hidden bg-gray-100 rounded-sm mb-4">
           <img
-            src={image}
+            src={images && images.length > 0 ? images[0] : 'https://via.placeholder.com/400x400'}
             alt={name}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
@@ -40,7 +64,7 @@ export const ProductCard: React.FC<ProductProps> = ({ name, category, price, old
 
           {/* Hover Actions */}
           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-            <button className="bg-white p-2 rounded-full hover:bg-blue-600 hover:text-white transition-colors" aria-label="Add to cart">
+            <button onClick={handleAddToCart} className="bg-white p-2 rounded-full hover:bg-blue-600 hover:text-white transition-colors" aria-label="Add to cart">
               <ShoppingCart size={16} />
             </button>
             <button
@@ -89,7 +113,7 @@ export const ProductCard: React.FC<ProductProps> = ({ name, category, price, old
       <Modal isOpen={isQuickViewOpen} onClose={() => setIsQuickViewOpen(false)}>
         <div className="grid grid-cols-1 md:grid-cols-2 p-8 gap-8">
           <div className="bg-gray-100 aspect-square">
-            <img src={image} alt={name} className="w-full h-full object-cover" />
+            <img src={images && images.length > 0 ? images[0] : 'https://via.placeholder.com/400x400'} alt={name} className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col">
             <h2 className="text-3xl font-bold mb-2 uppercase">{name}</h2>
@@ -112,7 +136,7 @@ export const ProductCard: React.FC<ProductProps> = ({ name, category, price, old
                   className="w-16 border p-2 text-center outline-none focus:ring-2 focus:ring-blue-500"
                   aria-label="Product quantity"
                 />
-                <button className="flex-1 bg-blue-600 text-white font-bold py-3 uppercase hover:bg-black transition-colors" aria-label="Add to cart">
+                <button onClick={handleAddToCart} className="flex-1 bg-blue-600 text-white font-bold py-3 uppercase hover:bg-black transition-colors" aria-label="Add to cart">
                   Add to Cart
                 </button>
               </div>

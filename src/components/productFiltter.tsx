@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getCategories } from '../services/category.service';
+import type { Category } from '../Types/category';
 
 export const ProductFilter: React.FC = () => {
   const [price, setPrice] = useState(500);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = ['All', 'Clothing', 'Watches', 'Shoes', 'Bags', 'Accessories'];
+  useEffect(() => {
+    getCategories()
+      .then((data) => {
+        setCategories(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching categories:', err);
+        setLoading(false);
+      });
+  }, []);
   const colors = [
     { name: 'Black', hex: '#000000' },
     { name: 'Blue', hex: '#2463EB' },
@@ -18,25 +32,31 @@ export const ProductFilter: React.FC = () => {
       <div>
         <h3 className="text-sm font-bold uppercase tracking-widest mb-4 border-b pb-2">Categories</h3>
         <ul className="space-y-2 text-sm text-gray-600">
-          {categories.map((cat) => (
-            <li key={cat} className="flex justify-between items-center hover:text-blue-600 cursor-pointer transition-colors group">
-              <span>{cat}</span>
-              <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full group-hover:bg-blue-100">12</span>
-            </li>
-          ))}
+          {loading ? (
+            <li>Loading categories...</li>
+          ) : (
+            categories.map((cat) => (
+              <li key={cat.id} className="flex justify-between items-center hover:text-blue-600 cursor-pointer transition-colors group">
+                <span>{cat.name}</span>
+                <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full group-hover:bg-blue-100">12</span>
+              </li>
+            ))
+          )}
         </ul>
       </div>
 
       {/* Price Filter */}
       <div>
-        <h3 className="text-sm font-bold uppercase tracking-widest mb-4 border-b pb-2">Filter by Price</h3>
-        <input 
-          type="range" 
-          min="0" 
-          max="1000" 
+        <label htmlFor="price-range" className="text-sm font-bold uppercase tracking-widest mb-4 border-b pb-2">Filter by Price</label>
+        <input
+          id="price-range"
+          type="range"
+          min="0"
+          max="1000"
           value={price}
           onChange={(e) => setPrice(Number(e.target.value))}
           className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+          aria-label="Price range"
         />
         <div className="flex justify-between mt-4 text-sm font-bold">
           <span>Price: $0 — ${price}</span>
@@ -94,7 +114,7 @@ export const ShopPage: React.FC = () => {
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-8 bg-gray-50 p-4 rounded-sm">
             <p className="text-sm text-gray-500">Showing 1–12 of 36 results</p>
-            <select className="bg-transparent text-sm font-bold outline-none cursor-pointer">
+            <select className="bg-transparent text-sm font-bold outline-none cursor-pointer" aria-label="Sort products">
               <option>Default Sorting</option>
               <option>Price: Low to High</option>
               <option>Newest Arrivals</option>
