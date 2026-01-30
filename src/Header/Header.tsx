@@ -4,7 +4,10 @@ import { LoginModal } from '../components/LoginModal';
 import { ProfileModal } from '../components/ProfileModal';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../hooks/useAuth';
-import { X, Minus, Plus } from 'lucide-react';
+import { 
+  X, Minus, Plus, 
+  Search, User, Heart, ShoppingCart, Menu 
+} from 'lucide-react';
 
 export const Header: React.FC = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -45,30 +48,32 @@ export const Header: React.FC = () => {
             <select className="hidden md:block border-l px-4 text-sm text-gray-500 bg-transparent outline-none">
               <option>All Categories</option>
             </select>
-            <button className="px-4 md:px-6 text-blue-600">🔍</button>
+            <button className="px-4 md:px-6 text-blue-600">
+              <Search size={18} />
+            </button>
           </div>
 
           {/* Icons */}
           <div className="flex items-center gap-4 md:gap-6 text-white text-sm">
             {isAuthenticated ? (
               <button onClick={() => setIsProfileModalOpen(true)} className="flex items-center gap-2 hover:text-gray-200">
-                <span className="text-xl">👤</span>
+                <User className="text-xl" />
                 <div className="leading-tight hidden md:block">HELLO, <br/><strong>{user?.name || 'USER'}</strong></div>
                 <div className="leading-tight md:hidden"><strong>{user?.name || 'USER'}</strong></div>
               </button>
             ) : (
               <button onClick={() => setIsLoginModalOpen(true)} className="flex items-center gap-2 hover:text-gray-200">
-                <span className="text-xl">👤</span>
+                <User className="text-xl" />
                 <div className="leading-tight hidden md:block">HELLO, <br/><strong>SIGN IN</strong></div>
                 <div className="leading-tight md:hidden"><strong>SIGN IN</strong></div>
               </button>
             )}
             <Link to="/wishlist" className="relative">
-              <span className="text-xl">🤍</span>
+              <Heart className="text-xl" />
               <span className="absolute -top-2 -right-2 bg-white text-blue-600 text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
             </Link>
             <button onClick={() => setIsCartOpen(true)} className="flex items-center gap-2 hover:text-gray-200">
-              <span className="text-xl">🛒</span>
+              <ShoppingCart className="text-xl" />
               <div className="hidden md:block">Cart<br/><strong>{cart.length} items</strong></div>
               <div className="md:hidden"><strong>{cart.length}</strong></div>
             </button>
@@ -80,7 +85,7 @@ export const Header: React.FC = () => {
       <div className="bg-white border-b shadow-sm">
         <div className="flex flex-col md:flex-row items-center px-2 md:px-4">
           <div className="bg-gray-50 border-x px-4 md:px-6 py-3 font-bold text-sm uppercase flex items-center gap-4 cursor-pointer w-full md:w-auto justify-center md:justify-start">
-            <span>☰</span> SHOP BY DEPARTMENT
+            <Menu className="text-xl" /> SHOP BY DEPARTMENT
           </div>
           <ul className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-8 px-4 md:px-10 text-xs font-bold uppercase tracking-widest text-gray-700 py-2 md:py-0">
             <li><Link to="/" className="text-blue-600 hover:text-blue-700">Home ▾</Link></li>

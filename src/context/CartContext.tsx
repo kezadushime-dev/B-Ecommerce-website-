@@ -60,8 +60,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     try {
       const response = await api.get('/api/cart');
       setCart(response.data);
-    } catch (error) {
-      console.error('Failed to fetch cart:', error);
+    } catch (error: any) {
+      // If 404, cart doesn't exist yet, so don't log error
+      if (error.response?.status !== 404) {
+        console.error('Failed to fetch cart:', error);
+      }
     }
   };
 

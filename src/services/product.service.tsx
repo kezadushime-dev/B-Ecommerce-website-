@@ -9,7 +9,7 @@ interface Apiresponse{
 
 
 export const getProducts = async (): Promise<Apiresponse> => {
-  const res = await publicApi.get("/api/products");
+  const res = await publicApi.get("/api/products?limit=1000");
 
   // Transform the products to match the Product interface
   const transformedProducts = res.data.products?.map((p: any) => {
@@ -50,5 +50,14 @@ export const getProducts = async (): Promise<Apiresponse> => {
 
 export const getProductById = async (id: string): Promise<Product> => {
   const res = await api.get(`/api/products/${id}`);
+  return res.data;
+};
+
+export const createProduct = async (productData: any): Promise<any> => {
+  const res = await api.post('/api/products', productData, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
   return res.data;
 };

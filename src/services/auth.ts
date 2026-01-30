@@ -63,7 +63,7 @@ api.interceptors.response.use(
 export const authService = {
   // Login
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await api.post('/api/auth/login', credentials);
+    const response = await api.post('/auth/login', credentials);
     const { user, token } = response.data;
 
     // Store auth data
@@ -75,7 +75,7 @@ export const authService = {
 
   // Register
   register: async (userData: RegisterData): Promise<AuthResponse> => {
-    const response = await api.post('/api/auth/register', userData);
+    const response = await api.post('/auth/register', userData);
     const { user, token } = response.data;
 
     // Store auth data
@@ -107,7 +107,7 @@ export const authService = {
 
   // Refresh token
   refreshToken: async (): Promise<{ token: string }> => {
-    const response = await api.post('/api/auth/refresh');
+    const response = await api.post('/auth/refresh');
     const { token } = response.data;
 
     // Update stored token

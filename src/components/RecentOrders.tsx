@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const orders = [
   { id: '#ORD-001', product: 'Earphone G1', customer: 'John Doe', total: '$17,678', date: '12 May 2025', status: 'Completed' },
@@ -11,7 +12,7 @@ export const RecentOrders = () => {
     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mt-6">
       <div className="flex justify-between items-center mb-6">
         <h3 className="font-bold text-gray-800 text-lg">Recent Orders</h3>
-        <button className="text-indigo-600 text-sm font-semibold hover:underline">See More {'>'}</button>
+        <Link to="/orders" className="text-indigo-600 text-sm font-semibold hover:underline">See More {'>'}</Link>
       </div>
 
       <div className="overflow-x-auto">

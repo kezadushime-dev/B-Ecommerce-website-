@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { TargetCard } from '../components/TargetCard';
 import { RevenueCard } from '../components/RevenueCard';
 
-import { 
-  LayoutDashboard, ShoppingCart, Box, Users, 
-  Megaphone, Search, Bell, Calendar, Plus, ChevronDown 
+import {
+  LayoutDashboard, ShoppingCart, Box, Users,
+  Megaphone, Search, Bell, Calendar, Plus, ChevronDown
 } from 'lucide-react';
 
 const SidebarItem = ({ icon: Icon, label, active = false, hasChild = false }: any) => (
@@ -20,6 +21,9 @@ const SidebarItem = ({ icon: Icon, label, active = false, hasChild = false }: an
 );
 
 export const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const pathname = location.pathname;
+
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
       {/* Sidebar */}
@@ -30,15 +34,23 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
         </div>
 
         <nav className="flex flex-col gap-1">
-          <SidebarItem icon={LayoutDashboard} label="Dashboard" active />
-          <SidebarItem icon={ShoppingCart} label="Orders" />
+          <Link to="/dashboard">
+            <SidebarItem icon={LayoutDashboard} label="Dashboard" active={pathname === '/dashboard'} />
+          </Link>
           <SidebarItem icon={Box} label="Product" hasChild />
           <div className="pl-12 flex flex-col gap-2 mt-2 mb-4">
-             <span className="text-sm text-indigo-600 font-medium cursor-pointer">Product List</span>
+             <Link to="/add-product">
+               <span className="text-sm text-indigo-600 font-medium cursor-pointer">Product List</span>
+             </Link>
              <span className="text-sm text-slate-400 cursor-pointer">Product Categories</span>
           </div>
-          <SidebarItem icon={Users} label="Customers" />
+          <Link to="/user-management">
+            <SidebarItem icon={Users} label="User Management" active={pathname === '/user-management'} />
+          </Link>
           <SidebarItem icon={Megaphone} label="Campaign" />
+          <Link to="/orders">
+            <SidebarItem icon={ShoppingCart} label="Orders" active={pathname === '/orders'} />
+          </Link>
         </nav>
       </aside>
 

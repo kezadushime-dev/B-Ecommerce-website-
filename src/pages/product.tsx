@@ -87,7 +87,14 @@ const ProductPage = () => {
     if (category) {
       setCatFilt(category);
     }
-  }, [searchParams]);
+    const id = searchParams.get('id');
+    if (id) {
+      const product = products.find(p => p.id.toString() === id);
+      if (product) {
+        setSelectedProduct(product);
+      }
+    }
+  }, [searchParams, products]);
 
   // New states for design
   const [itemsPerPage, setItemsPerPage] = useState(12);

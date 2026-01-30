@@ -11,12 +11,16 @@ import AuthPage from './pages/AuthPage';
 import { ProfilePage } from './pages/ProfilePage';
 
 import { BlogPage } from './pages/BlogPage';
+import ProductInsert from './pages/Product.insert';
 import ProductPage from './pages/product';
 import WishlistPage from './pages/wishlist';
 import CartPage from './pages/cart';
 import { CartProvider } from './context/CartContext';
 import CategoryPage from "./pages/category";
 import DashboardPage from './pages/DashboardPage';
+import OrdersPage from './pages/OrdersPage';
+import CreateCategory from './pages/productcategory';
+import UserList from './pages/usermanagement';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import './App.css';
@@ -55,7 +59,11 @@ function App() {
                 <Route path="/wishlist" element={<WishlistPage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/orders" element={<OrdersPage />} />
                 <Route path="/product" element={<ErrorBoundary><ProductPage /></ErrorBoundary>} />
+                <Route path="/add-product" element={<ProductInsert />} />
+                <Route path="/product-category" element={<CreateCategory />} />
+                <Route path="/user-management" element={<UserList />} />
               </Routes>
             </div>
             <Footer />

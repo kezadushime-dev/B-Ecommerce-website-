@@ -4,7 +4,7 @@ import api from './api';
 export const userService = {
   // GET all users
   getUsers: async (params?: { search?: string; role?: string }) => {
-    const response = await api.get('/users', { params });
+    const response = await api.get('/auth/users', { params });
     return response.data;
   },
 

@@ -19,6 +19,7 @@ import { categoryService } from '../services/category.service';
 import type { Category } from '../Types/category';
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../services/product.service";
+import { useNavigate } from 'react-router-dom';
 
 // --- STYLES (Swiper CSS imports) ---
 import 'swiper/css/bundle';
@@ -37,8 +38,8 @@ const categories = [
 
 // --- COMPONENTS ---
 
-const ProductCard = ({ product }: { product: any }) => (
-  <div className="group bg-white p-2 border border-transparent hover:shadow-sm transition-all duration-300">
+const ProductCard = ({ product, onClick }: { product: any, onClick?: () => void }) => (
+  <div className="group bg-white p-2 border border-transparent hover:shadow-sm transition-all duration-300 cursor-pointer" onClick={onClick}>
     <div className="relative aspect-[3/4] overflow-hidden bg-[#f9f9f9] mb-3">
       {product.discount && (
         <span className="absolute top-2 left-2 bg-[#77b43f] text-white text-[10px] px-2 py-0.5 font-bold z-10">
@@ -51,7 +52,7 @@ const ProductCard = ({ product }: { product: any }) => (
         <button className="bg-white p-2 rounded-full shadow hover:bg-blue-600 hover:text-white transition-colors" aria-label="Add to wishlist"><Heart size={16} /></button>
       </div>
     </div>
-    <h4 className="text-[11px] text-blue-600 font-bold uppercase truncate mb-1 hover:text-black cursor-pointer">{product.name}</h4>
+    <h4 className="text-[11px] text-blue-600 font-bold uppercase truncate mb-1 hover:text-black">{product.name}</h4>
     <p className="text-sm font-black text-slate-800">{product.price}</p>
   </div>
 );
@@ -188,6 +189,7 @@ export const Hero = () => {
 };
 
 export const MensFashionSection = ({ products, isLoading }: { products?: any, isLoading: boolean }) => {
+  const navigate = useNavigate();
   const menProducts = products?.products?.filter((p: any) => {
     const category = typeof p.category === 'string' ? p.category : p.category?.name;
     return category?.toLowerCase().includes('men') || category?.toLowerCase().includes('male');
@@ -201,7 +203,7 @@ export const MensFashionSection = ({ products, isLoading }: { products?: any, is
           <h3 className="font-black text-sm text-blue-600 border-b-2 border-blue-600 inline-block pb-1 uppercase mb-6">Men's Fashion</h3>
           <ul className="text-[13px] text-gray-500 space-y-4">
             {['Wallets', 'T-Shirts', 'Shirts', 'Jeans', 'Jackets'].map(c => (
-              <li key={c} className="hover:text-blue-600 cursor-pointer transition-colors flex justify-between items-center group">
+              <li key={c} onClick={() => navigate(`/shop?category=${c}`)} className="hover:text-blue-600 cursor-pointer transition-colors flex justify-between items-center group">
                 {c} <ChevronRight size={14} className="text-gray-300 group-hover:text-blue-600" />
               </li>
             ))}
@@ -258,6 +260,7 @@ export const MensFashionSection = ({ products, isLoading }: { products?: any, is
 };
 
 export const WomensFashionSection = ({ products, isLoading }: { products?: any, isLoading: boolean }) => {
+  const navigate = useNavigate();
   const womenProducts = products?.products?.filter((p: any) => {
     const category = typeof p.category === 'string' ? p.category : p.category?.name;
     return category?.toLowerCase().includes('women') || category?.toLowerCase().includes('female') || category?.toLowerCase().includes('lady');
@@ -318,6 +321,7 @@ export const WomensFashionSection = ({ products, isLoading }: { products?: any, 
                   discount: p.originalPrice ? `${Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}% OFF` : undefined,
                   image: p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/400x400'
                 }}
+                onClick={() => navigate(`/product?id=${p.id}`)}
               />
             ))
           )}
