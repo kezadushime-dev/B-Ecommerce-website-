@@ -16,6 +16,7 @@ import WishlistPage from './pages/wishlist';
 import CartPage from './pages/cart';
 import { CartProvider } from './context/CartContext';
 import CategoryPage from "./pages/category";
+import DashboardPage from './pages/DashboardPage';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import './App.css';
@@ -53,6 +54,7 @@ function App() {
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
                 <Route path="/cart" element={<CartPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/product" element={<ErrorBoundary><ProductPage /></ErrorBoundary>} />
               </Routes>
             </div>

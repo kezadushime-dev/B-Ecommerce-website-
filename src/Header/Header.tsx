@@ -22,7 +22,7 @@ export const Header: React.FC = () => {
             <span>$ Dollar () US▾</span>
           </div>
           <div className="flex flex-wrap gap-2 md:gap-4 uppercase tracking-tight">
-            <span>Welcome to Online Market!</span>
+            <span>Welcome to Isoko Hub!</span>
             <Link to="/blog" className="hover:text-gray-200">Blog</Link>
             <span>FAQ</span>
             <Link to="/contact" className="hover:text-gray-200">Contact Us</Link>
@@ -33,7 +33,7 @@ export const Header: React.FC = () => {
       {/* Main Blue Header */}
       <div className="bg-[#2463EB] py-4 md:py-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 px-2 md:px-4">
-          <div className="text-2xl md:text-4xl font-bold text-white tracking-tighter">Online Market.</div>
+          <div className="text-2xl md:text-4xl font-bold text-white tracking-tighter">Isoko Hub.</div>
 
           {/* Search Bar */}
           <div className="w-full md:flex-1 md:max-w-2xl flex bg-white rounded-full overflow-hidden">

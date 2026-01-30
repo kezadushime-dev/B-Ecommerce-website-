@@ -11,10 +11,18 @@ import { categoryService } from "../services/category.service";
 
 // --- Types ---
 interface Review {
-  username: string;
-  rating: number;
-  comment: string;
-  date: string;
+  user?: {
+    username: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+    _id: string;
+  };
+  username?: string;
+  rating?: number;
+  comment?: string;
+  createdAt?: string;
+  _id?: string;
 }
 
  export interface Product {
@@ -50,7 +58,7 @@ const ProductPage = () => {
 
   const { data: fetchedCategories } = useQuery({
     queryKey: ["categories"],
-    queryFn: categoryService.getCategories,
+    queryFn: () => categoryService.getCategories(),
   });
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -89,7 +97,7 @@ const ProductPage = () => {
   // Category counts
   const categoryCounts = useMemo(() => {
     return products.reduce((acc, p) => {
-      const catName = typeof p.category === 'string' ? p.category : p.category.name;
+      const catName = p.category ? (typeof p.category === 'string' ? p.category : p.category.name) : 'Uncategorized';
       acc[catName] = (acc[catName] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
@@ -110,7 +118,8 @@ const ProductPage = () => {
   // --- Filtering Logic ---
   const filtered = useMemo(() => {
     return products.filter(p => {
-      return (catFilt === 'All' || p.category === catFilt) &&
+      const catName = p.category ? (typeof p.category === 'string' ? p.category : p.category.name) : '';
+      return (catFilt === 'All' || catName === catFilt) &&
              (p.price <= priceFilt) &&
              (!sizeFilt || p.sizes.includes(sizeFilt)) &&
              (p.rating >= ratingFilt);
@@ -122,6 +131,7 @@ const ProductPage = () => {
     e?.stopPropagation();
     const cartProduct = {
       ...p,
+      id: p.id.toString(),
       image: p.images && p.images.length > 0 ? p.images[0] : '',
       category: typeof p.category === 'string' ? p.category : p.category.name
     };
@@ -134,10 +144,10 @@ const ProductPage = () => {
       username: "Guest User",
       rating: newReview.rating,
       comment: newReview.comment,
-      date: new Date().toLocaleDateString()
+      createdAt: new Date().toISOString()
     };
     setProducts(prev => prev.map(p => p.id === selectedProduct.id ? {
-      ...p, 
+      ...p,
       userReviews: [review, ...p.userReviews],
       reviews: p.reviews + 1
     } : p));
@@ -170,9 +180,9 @@ const ProductPage = () => {
                 const p = products.find(x => x.id === id)!;
                 return (
                   <div key={id} className="p-6 text-center border-r last:border-0 relative">
-                    <div className="h-40 mb-16"><img src={p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/400x400'} alt={p.name} className="w-32 h-32 object-cover mx-auto mb-2" /><p className="font-bold text-xs">{p.name}</p></div>
-                    <div className="mb-16 font-black text-blue-600">${p.price}</div>
-                    <div className="mb-16 text-xs">{typeof p.category === 'string' ? p.category : p.category.name}</div>
+                    <div className="h-40 mb-16"><img src={p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/400x400'} alt={String(p.name)} className="w-32 h-32 object-cover mx-auto mb-2" /><p className="font-bold text-xs">{String(p.name)}</p></div>
+                    <div className="mb-16 font-black text-blue-600">${String(p.price)}</div>
+                    <div className="mb-16 text-xs">{String(typeof p.category === 'string' ? p.category : p.category.name)}</div>
                     <div className="mb-16 flex justify-center text-orange-400"><Star size={14} fill="currentColor"/> {p.rating}</div>
                     <button onClick={() => handleAddToCart(p)} className="bg-slate-900 text-white text-[10px] px-4 py-2 font-bold">ADD TO CART</button>
                   </div>
@@ -192,8 +202,8 @@ const ProductPage = () => {
                 return (
                   <div key={id} className="border p-4 relative group">
                     <button title="Remove from wishlist" onClick={() => setWishlist(w => w.filter(i => i !== id))} className="absolute top-2 right-2 text-slate-300 hover:text-red-500"><X size={18}/></button>
-                    <img src={p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/400x400'} alt={p.name} className="w-full aspect-square object-cover mb-4" />
-                    <h4 className="font-bold text-sm mb-2">{p.name}</h4>
+                    <img src={p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/400x400'} alt={String(p.name)} className="w-full aspect-square object-cover mb-4" />
+                    <h4 className="font-bold text-sm mb-2">{String(p.name)}</h4>
                     <button onClick={() => handleAddToCart(p)} className="w-full bg-blue-600 text-white py-2 text-xs font-bold">MOVE TO CART</button>
                   </div>
                 )
@@ -212,7 +222,7 @@ const ProductPage = () => {
                 <div className="flex flex-col gap-2 text-sm text-slate-500">
                   <span onClick={() => setCatFilt('All')} className={`cursor-pointer hover:text-blue-600 ${catFilt === 'All' ? 'text-blue-600 font-bold' : ''}`}>All ({products.length})</span>
                   {fetchedCategories?.map((cat) => (
-                    <span key={cat.name} onClick={() => setCatFilt(cat.name)} className={`cursor-pointer hover:text-blue-600 ${catFilt === cat.name ? 'text-blue-600 font-bold' : ''}`}>{cat.name} ({categoryCounts[cat.name] || 0})</span>
+                    <span key={String(cat.name)} onClick={() => setCatFilt(String(cat.name))} className={`cursor-pointer hover:text-blue-600 ${catFilt === String(cat.name) ? 'text-blue-600 font-bold' : ''}`}>{String(cat.name)} ({categoryCounts[String(cat.name)] || 0})</span>
                   ))}
                 </div>
               </div>
@@ -300,20 +310,20 @@ const ProductPage = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <span className="text-xs text-slate-400 uppercase">{typeof p.category === 'string' ? p.category : p.category.name}</span>
-                      <h4 className="text-sm font-bold group-hover:text-blue-600 transition-colors">{p.name}</h4>
+                      <span className="text-xs text-slate-400 uppercase">{String(p.category ? (typeof p.category === 'string' ? p.category : p.category.name) : 'Uncategorized')}</span>
+                      <h4 className="text-sm font-bold group-hover:text-blue-600 transition-colors">{String(p.name)}</h4>
                       <div className="flex items-center gap-1">
                         <div className="flex text-orange-400">
                           {[...Array(5)].map((_, i) => <Star key={i} size={12} fill={i < Math.floor(p.rating) ? "currentColor" : "none"} />)}
                         </div>
-                        <span className="text-xs text-slate-400">({p.reviews})</span>
+                        <span className="text-xs text-slate-400">({String(p.reviews)})</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-black text-slate-900">${p.price.toFixed(2)}</span>
+                        <span className="font-black text-slate-900">${String(p.price.toFixed(2))}</span>
                         {p.originalPrice && (
                           <>
-                            <span className="text-xs text-slate-300 line-through">${p.originalPrice.toFixed(2)}</span>
-                            <span className="text-xs text-red-500 font-bold">{Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}% OFF</span>
+                            <span className="text-xs text-slate-300 line-through">${String(p.originalPrice.toFixed(2))}</span>
+                            <span className="text-xs text-red-500 font-bold">{String(Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100))}% OFF</span>
                           </>
                         )}
                       </div>
@@ -370,14 +380,14 @@ const ProductPage = () => {
                 <img src={selectedProduct.images && selectedProduct.images.length > 0 ? selectedProduct.images[0] : 'https://via.placeholder.com/400x400'} alt={selectedProduct.name} className="absolute inset-0 w-full h-full object-cover" />
               </div>
               <div className="w-full lg:w-1/5 p-8 space-y-6">
-                <h2 className="text-4xl font-black uppercase tracking-tighter">{selectedProduct.name}</h2>
+                <h2 className="text-4xl font-black uppercase tracking-tighter">{String(selectedProduct.name)}</h2>
                 <div className="bg-blue-50 border border-blue-100 p-4 flex gap-6 text-blue-600 font-black">
                   <div>340 <span className="block text-[8px] uppercase text-slate-400">Days</span></div>
                   <div>13 <span className="block text-[8px] uppercase text-slate-400">Hrs</span></div>
                   <div>55 <span className="block text-[8px] uppercase text-slate-400">Mins</span></div>
                 </div>
-                <div className="text-4xl font-black text-blue-600">${selectedProduct.price}</div>
-                <p className="text-slate-500 text-sm leading-relaxed">{selectedProduct.description}</p>
+                <div className="text-4xl font-black text-blue-600">${String(selectedProduct.price)}</div>
+                <p className="text-slate-500 text-sm leading-relaxed">{String(selectedProduct.description)}</p>
 
                 <div className="flex gap-4">
                   <button onClick={() => handleAddToCart(selectedProduct)} className="flex-1 bg-blue-600 text-white py-5 font-black uppercase tracking-widest hover:bg-slate-900 transition">ADD TO CART</button>
@@ -388,18 +398,32 @@ const ProductPage = () => {
                 <div className="mt-12 border-t pt-10">
                   <h3 className="font-black text-lg mb-6 uppercase">Customer Reviews</h3>
                   <div className="space-y-6 mb-10">
-                    {selectedProduct.userReviews?.map((rev: Review, i: number) => (
-                      <div key={i} className="bg-slate-50 p-4 rounded">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="font-bold text-sm">{rev.username}</span>
-                          <span className="text-[10px] text-slate-400">{rev.date}</span>
-                        </div>
-                        <div className="flex text-orange-400 mb-2">
-                          {[...Array(5)].map((_, starI) => <Star key={starI} size={10} fill={starI < rev.rating ? "currentColor" : "none"} />)}
-                        </div>
-                        <p className="text-xs text-slate-600 italic">"{rev.comment}"</p>
-                      </div>
-                    ))}
+                    {selectedProduct.userReviews?.map((rev: Review, i: number) => {
+                      try {
+                        const username = String((rev.user?.username && typeof rev.user.username === 'string') ? rev.user.username : (rev.username && typeof rev.username === 'string') ? rev.username : 'Anonymous');
+                        const rating = (rev.user?.rating && typeof rev.user.rating === 'number') ? rev.user.rating : (rev.rating && typeof rev.rating === 'number') ? rev.rating : 0;
+                        const comment = String((rev.user?.comment && typeof rev.user.comment === 'string') ? rev.user.comment : (rev.comment && typeof rev.comment === 'string') ? rev.comment : '');
+                        const createdAt = String((rev.user?.createdAt && typeof rev.user.createdAt === 'string') ? rev.user.createdAt : (rev.createdAt && typeof rev.createdAt === 'string') ? rev.createdAt : '');
+                        return (
+                          <div key={i} className="bg-slate-50 p-4 rounded">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="font-bold text-sm">{username}</span>
+                              <span className="text-[10px] text-slate-400">{createdAt ? new Date(createdAt).toLocaleDateString() : 'N/A'}</span>
+                            </div>
+                            <div className="flex text-orange-400 mb-2">
+                              {[...Array(5)].map((_, starI) => <Star key={starI} size={10} fill={starI < rating ? "currentColor" : "none"} />)}
+                            </div>
+                            <p className="text-xs text-slate-600 italic">"{comment}"</p>
+                          </div>
+                        );
+                      } catch (e) {
+                        return (
+                          <div key={i} className="bg-slate-50 p-4 rounded">
+                            <p className="text-xs text-slate-600">Invalid review data</p>
+                          </div>
+                        );
+                      }
+                    })}
                   </div>
 
                   {/* Add Review Form */}

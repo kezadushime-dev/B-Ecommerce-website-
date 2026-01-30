@@ -28,10 +28,17 @@ export const getProducts = async (): Promise<Apiresponse> => {
       sizes: p.sizes || [],
       images: (p.images || (p.image ? [p.image] : [])).map(processImage),
       isFeatured: p.isFeatured || false,
-      description: p.description || '',
-      weight: p.weight || '',
-      material: p.material || '',
-      userReviews: p.userReviews || []
+      description: typeof p.description === 'string' ? p.description : '',
+      weight: typeof p.weight === 'string' ? p.weight : '',
+      material: typeof p.material === 'string' ? p.material : '',
+      userReviews: (p.userReviews || []).map((review: any) => ({
+        user: review.user,
+        username: typeof review.username === 'string' ? review.username : (typeof review.user?.username === 'string' ? review.user.username : 'Anonymous'),
+        rating: typeof review.rating === 'number' ? review.rating : 0,
+        comment: typeof review.comment === 'string' ? review.comment : '',
+        createdAt: typeof review.createdAt === 'string' ? review.createdAt : (typeof review.date === 'string' ? review.date : new Date().toISOString()),
+        _id: review._id || ''
+      }))
     };
   });
 

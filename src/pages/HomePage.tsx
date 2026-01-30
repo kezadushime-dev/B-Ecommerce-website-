@@ -1,6 +1,6 @@
 import React from 'react';
 // 1. Keep your existing layout imports
-import { Hero, MensFashionSection, WomensFashionSection, PromoGrid } from '../components/HomeComponents';
+import { Hero, MensFashionSection, WomensFashionSection, PromoGrid, ServiceSection } from '../components/HomeComponents';
 import { CategorySlider } from '../components/CategorySlider';
 
 // 2. Add the new imports for data fetching
@@ -24,21 +24,23 @@ export const HomePage: React.FC = () => {
       <Hero />
       <CategorySlider />
       Products
-      {/* 4. Replace the static <ProductSection /> with your dynamic grid logic */}
+      {/* 4. Replace the static <ProductSection /> with your dynamic row logic */}
       {/* We check loading here specifically so the rest of the page (Hero/Slider) is still visible */}
       {isLoading ? (
         <p>Loading products...</p>
       ) : (
-        <div className="grid grid-cols-4 gap-6">
+        <div className="flex gap-6 overflow-x-auto pb-4">
           { products && products.products?.map((p) => (
-            <ProductCard key={p.id}  {...p} />
+            <div key={p.id} className="flex-shrink-0 w-64">
+              <ProductCard {...p} id={p.id.toString()} />
+            </div>
           ))}
         </div>
       )}
 
-      <MensFashionSection />
-      <WomensFashionSection />
-      <PromoGrid />
+      <MensFashionSection products={products} isLoading={isLoading} />
+      <WomensFashionSection products={products} isLoading={isLoading} />
+     <ServiceSection/>
     </div>
   );
 };
