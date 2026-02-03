@@ -56,38 +56,6 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8">
-          <div className="relative w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              className="w-full bg-slate-50 border-none rounded-xl py-2 pl-10 focus:ring-2 focus:ring-indigo-500 transition-all"
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <button className="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100" aria-label="Add new">
-              <Plus size={20} />
-            </button>
-            <button className="p-2 text-slate-400 hover:bg-slate-50 rounded-lg relative" aria-label="Calendar">
-              <Calendar size={20} />
-            </button>
-            <button className="p-2 text-slate-400 hover:bg-slate-50 rounded-lg relative" aria-label="Notifications">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
-            <div className="flex items-center gap-2 ml-4 cursor-pointer">
-              <img 
-                src="https://i.pinimg.com/1200x/ee/20/db/ee20db6bf136b7f2b4c101a994af9329.jpg" 
-                alt="Avatar" 
-                className="w-10 h-10 rounded-full bg-slate-100"
-              />
-            </div>
-          </div>
-        </header>
-
         {/* Dashboard Content */}
         <div className="p-8 overflow-y-auto">
           <div className="mb-8">

@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LoginModal } from '../components/LoginModal';
 import { ProfileModal } from '../components/ProfileModal';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../hooks/useAuth';
-import { 
-  X, Minus, Plus, 
-  Search, User, Heart, ShoppingCart, Menu 
+import {
+  X, Minus, Plus,
+  Search, User, Heart, ShoppingCart, Menu, Star
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
+  const navigate = useNavigate();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const { user, isAuthenticated } = useAuth();
@@ -52,13 +53,21 @@ export const Header: React.FC = () => {
               <Search size={18} />
             </button>
           </div>
+ 
 
           {/* Icons */}
           <div className="flex items-center gap-4 md:gap-6 text-white text-sm">
             {isAuthenticated ? (
               <button onClick={() => setIsProfileModalOpen(true)} className="flex items-center gap-2 hover:text-gray-200">
-                <User className="text-xl" />
-                <div className="leading-tight hidden md:block">HELLO, <br/><strong>{user?.name || 'USER'}</strong></div>
+                {user?.avatar && user.avatar.trim() !== '' ? (
+                  <img src={user.avatar} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+                ) : (
+                  <User className="text-xl" />
+                )}
+                <div className="leading-tight hidden md:block">
+                  HELLO, <strong>{user?.name || 'USER'}</strong><br/>
+                  <span className="text-xs">{user?.email}</span>
+                </div>
                 <div className="leading-tight md:hidden"><strong>{user?.name || 'USER'}</strong></div>
               </button>
             ) : (
@@ -113,7 +122,11 @@ export const Header: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {cart.map(item => (
                 <div key={item.id} className="flex gap-4 border-b pb-4">
-                  <img src={item.image} className="w-16 h-20 object-cover" />
+                  {item.image && item.image.trim() !== '' ? (
+                    <img src={item.image} alt={item.name} className="w-16 h-20 object-cover" />
+                  ) : (
+                    <div className="w-16 h-20 bg-gray-200 flex items-center justify-center text-xs text-gray-500">No Image</div>
+                  )}
                   <div className="flex-1">
                     <h4 className="text-xs font-bold uppercase">{item.name}</h4>
                     <p className="text-blue-600 font-bold">${item.price}</p>
@@ -122,13 +135,20 @@ export const Header: React.FC = () => {
                       <span className="text-xs">{item.quantity}</span>
                       <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 border"><Plus size={10}/></button>
                     </div>
+                    <button
+                      onClick={() => navigate(`/product?id=${item.id}`)}
+                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 mt-2"
+                    >
+                      <Star size={12} />
+                      Review
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
             <div className="p-6 border-t font-black bg-white">
               <div className="flex justify-between mb-4"><span>Subtotal:</span><span>${cart.reduce((a, b) => a + (b.price * b.quantity), 0).toFixed(2)}</span></div>
-              <button onClick={() => alert('Order sent please')} className="w-full bg-blue-600 text-white py-4 hover:bg-black transition">CHECKOUT</button>
+              <Link to="/checkout" onClick={() => setIsCartOpen(false)} className="block w-full bg-blue-600 text-white py-4 hover:bg-black transition text-center">CHECKOUT</Link>
             </div>
           </div>
         </div>

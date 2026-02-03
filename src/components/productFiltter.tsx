@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { getCategories } from '../services/category.service';
 import type { Category } from '../Types/category';
 
-export const ProductFilter: React.FC = () => {
+interface ProductFilterProps {
+  selectedCategory: string;
+  onCategoryChange: (category: string) => void;
+}
+
+export const ProductFilter: React.FC<ProductFilterProps> = ({ selectedCategory, onCategoryChange }) => {
   const [price, setPrice] = useState(500);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,12 +40,25 @@ export const ProductFilter: React.FC = () => {
           {loading ? (
             <li>Loading categories...</li>
           ) : (
-            categories.map((cat) => (
-              <li key={cat.id} className="flex justify-between items-center hover:text-blue-600 cursor-pointer transition-colors group">
-                <span>{cat.name}</span>
-                <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full group-hover:bg-blue-100">12</span>
+            <>
+              <li
+                className={`flex justify-between items-center hover:text-blue-600 cursor-pointer transition-colors group ${selectedCategory === '' ? 'text-blue-600 font-semibold' : ''}`}
+                onClick={() => onCategoryChange('')}
+              >
+                <span>All</span>
+                <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full group-hover:bg-blue-100">All</span>
               </li>
-            ))
+              {categories.map((cat) => (
+                <li
+                  key={cat._id}
+                  className={`flex justify-between items-center hover:text-blue-600 cursor-pointer transition-colors group ${selectedCategory === cat.name ? 'text-blue-600 font-semibold' : ''}`}
+                  onClick={() => onCategoryChange(cat.name)}
+                >
+                  <span>{cat.name}</span>
+                  <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full group-hover:bg-blue-100">12</span>
+                </li>
+              ))}
+            </>
           )}
         </ul>
       </div>

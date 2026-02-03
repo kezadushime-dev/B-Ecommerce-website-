@@ -1,6 +1,6 @@
 export interface Category {
-  id: number;  // must match backend
+  _id: string;
   name: string;
-  image?: string;
+  images?: string[];
   productCount?: number;
 }

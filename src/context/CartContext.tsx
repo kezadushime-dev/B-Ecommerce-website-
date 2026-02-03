@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { isAuthenticated } from '../services/auth';
+import { useAuth } from '../hooks/useAuth';
 
 interface Product {
   id: string;
@@ -53,12 +54,13 @@ interface CartProviderProps {
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
+  const { user } = useAuth();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const fetchCart = async () => {
     try {
-      const response = await api.get('/api/cart');
+      const response = await api.get('/cart');
       setCart(response.data);
     } catch (error: any) {
       // If 404, cart doesn't exist yet, so don't log error
@@ -95,7 +97,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const removeFromCart = async (id: string) => {
     try {
-      await api.delete(`/api/cart/${id}`);
+      await api.delete(`/cart/${id}`);
       await fetchCart();
     } catch (error) {
       console.error('Failed to remove item from cart:', error);
@@ -115,7 +117,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const clearCart = async () => {
     try {
-      await api.delete('/api/cart');
+      await api.delete('/cart/clear');
       setCart([]);
     } catch (error) {
       console.error('Failed to clear cart:', error);

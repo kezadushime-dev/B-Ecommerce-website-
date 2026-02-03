@@ -39,15 +39,15 @@ export const categoryService = {
   },
 
   // POST create category
-  createCategory: async (categoryData: Omit<Category, 'id' | 'createdAt'>): Promise<Category> => {
-    const response = await api.post<ApiResponse<Category>>('/api/categories', categoryData);
-    return response.data.data;
+  createCategory: async (categoryData: Omit<Category, '_id'>): Promise<Category> => {
+    const response = await api.post<Category>('/api/categories', categoryData);
+    return response.data;
   },
 
   // PUT update category
-  updateCategory: async (id: string, categoryData: Partial<Omit<Category, 'id'>>): Promise<Category> => {
-    const response = await api.put<ApiResponse<Category>>(`/api/categories/${id}`, categoryData);
-    return response.data.data;
+  updateCategory: async (id: string, categoryData: Partial<Omit<Category, '_id'>>): Promise<Category> => {
+    const response = await api.put<Category>(`/api/categories/${id}`, categoryData);
+    return response.data;
   },
 
   // DELETE category

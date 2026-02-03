@@ -26,7 +26,7 @@ interface Review {
 }
 
  export interface Product {
-  id: number;
+  id: string;
   name: string;
   category: string | { name: string };
   price: number;
@@ -35,7 +35,7 @@ interface Review {
   reviews: number;
   colors: string[];
   sizes: string[];
-  images: string[];
+  image: string;
   isFeatured: boolean;
   description: string;
   weight: string;
@@ -65,8 +65,8 @@ const ProductPage = () => {
   const [view, setView] = useState<'shop' | 'wishlist' | 'compare'>('shop');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const [wishlist, setWishlist] = useState<number[]>([]);
-  const [compareList, setCompareList] = useState<number[]>([]);
+  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [compareList, setCompareList] = useState<string[]>([]);
   const { addToCart } = useCart();
 
   useEffect(() => {

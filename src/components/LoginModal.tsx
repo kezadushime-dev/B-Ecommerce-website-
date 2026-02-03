@@ -12,7 +12,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', profileImage: '' });
+  const [registerData, setRegisterData] = useState({ name: '', email: '', password: '', avatar: '' });
   const [loginError, setLoginError] = useState('');
   const [loginSuccess, setLoginSuccess] = useState('');
   const [registerError, setRegisterError] = useState('');
@@ -158,10 +158,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               <div>
                 <input
                   type="text"
-                  placeholder="Username"
-                  name="username"
-                  value={registerData.username}
-                  onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
+                  placeholder="Name"
+                  name="name"
+                  value={registerData.name}
+                  onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
                   className="w-full border border-gray-200 p-4 text-sm focus:border-blue-600 outline-none transition-all"
                   required
                 />
@@ -198,10 +198,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               <div>
                 <input
                   type="text"
-                  placeholder="Profile Image URL"
-                  name="profileImage"
-                  value={registerData.profileImage}
-                  onChange={(e) => setRegisterData({ ...registerData, profileImage: e.target.value })}
+                  placeholder="Avatar URL"
+                  name="avatar"
+                  value={registerData.avatar}
+                  onChange={(e) => setRegisterData({ ...registerData, avatar: e.target.value })}
                   className="w-full border border-gray-200 p-4 text-sm focus:border-blue-600 outline-none transition-all"
                 />
               </div>

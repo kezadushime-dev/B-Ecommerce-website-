@@ -61,3 +61,17 @@ export const createProduct = async (productData: any): Promise<any> => {
   });
   return res.data;
 };
+
+export const updateProduct = async (id: string, productData: any): Promise<any> => {
+  const res = await api.patch(`/api/products/${id}`, productData, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return res.data;
+};
+
+export const deleteProduct = async (id: string): Promise<any> => {
+  const res = await api.delete(`/api/products/${id}`);
+  return res.data;
+};

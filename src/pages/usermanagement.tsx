@@ -3,18 +3,19 @@ import { Mail, MoreHorizontal, UserPlus } from 'lucide-react';
 import { DashboardLayout } from './Dashboard';
 import { userService } from '../services/userService';
 import type { User } from '../Types/user';
+import { Modal } from '../modal/modal';
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddUser, setShowAddUser] = useState<boolean>(false);
-  const [newUser, setNewUser] = useState<{ username: string; email: string; role: string }>({ username: '', email: '', role: 'User' });
+  const [newUser, setNewUser] = useState<{ name: string; email: string; role: string }>({ name: '', email: '', role: 'User' });
 
   const handleAddUser = async () => {
     try {
       await userService.createUser(newUser);
-      setNewUser({ username: '', email: '', role: 'User' });
+      setNewUser({ name: '', email: '', role: 'User' });
       setShowAddUser(false);
       // Refetch users
       const fetchedUsers = await userService.getUsers();
@@ -93,7 +94,7 @@ const UserList: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                        <button className="text-indigo-600 hover:text-indigo-800 text-sm font-medium" onClick={() => alert(`Details for ${user.username}: Email: ${user.email}, Role: ${user.role}`)}>
                           View Details
                         </button>
                       </td>
@@ -127,6 +128,63 @@ const UserList: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Add User Modal */}
+        <Modal isOpen={showAddUser} onClose={() => setShowAddUser(false)}>
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-slate-800 mb-4">Add New User</h2>
+            <form onSubmit={(e) => { e.preventDefault(); handleAddUser(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={newUser.name}
+                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                  placeholder="Enter user name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Role</label>
+                <select
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Select user role"
+                >
+                  <option value="User">User</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddUser(false)}
+                  className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                >
+                  Add User
+                </button>
+              </div>
+            </form>
+          </div>
+        </Modal>
       </div>
     </DashboardLayout>
   );

@@ -36,7 +36,7 @@ export const CategorySlider = () => {
         {categories.map((cat) => (
           <button key={cat.name} className="flex flex-col items-center group cursor-pointer flex-shrink-0 bg-transparent border-none p-0" onClick={() => handleCategoryClick(cat.name)}>
             <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border border-gray-100 mb-3 transition-all duration-300 group-hover:shadow-lg group-hover:border-blue-500">
-              <img src={defaultImg} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+              <img src={cat.images && cat.images.length > 0 ? cat.images[0] : defaultImg} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
             </div>
             <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">{cat.name}</span>
           </button>
