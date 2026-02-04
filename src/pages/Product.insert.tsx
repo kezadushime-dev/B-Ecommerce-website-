@@ -285,7 +285,7 @@ const ProductInsert: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Category</label>
-                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none" aria-label="Select category">
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none" aria-label="Select category" title="Select a category">
                     <option value="">Select a category</option>
                     {categoriesData?.map((cat: any) => (
                       <option key={cat._id} value={cat.name}>
@@ -296,7 +296,7 @@ const ProductInsert: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Vendor</label>
-                  <select value={vendorId} onChange={(e) => setVendorId(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none" aria-label="Select vendor">
+                  <select value={vendorId} onChange={(e) => setVendorId(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none" aria-label="Select vendor" title="Select a vendor">
                     <option value="">Select a vendor</option>
                     {usersData?.users?.map((user: any) => (
                       <option key={user.id || user._id} value={user.name}>
@@ -307,8 +307,8 @@ const ProductInsert: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">In Stock</label>
-                    <input type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500" />
+                    <label htmlFor="inStock" className="block text-xs font-semibold text-gray-500 uppercase mb-1">In Stock</label>
+                    <input id="inStock" type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500" title="In Stock" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Stock Quantity</label>
