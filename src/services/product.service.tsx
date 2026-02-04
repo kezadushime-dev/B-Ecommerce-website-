@@ -9,43 +9,82 @@ interface Apiresponse{
 
 
 export const getProducts = async (): Promise<Apiresponse> => {
-  const res = await publicApi.get("/api/products?limit=1000");
+  try {
+    const res = await publicApi.get("/api/products?limit=1000");
+    
+    console.log('Raw API response:', res.data);
+    
+    // Handle different API response structures
+    let productsArray = res.data.products || res.data.data || res.data;
+    
+    if (!Array.isArray(productsArray)) {
+      console.warn('Products is not an array:', productsArray);
+      return {
+        message: res.data.message || 'No products found',
+        products: []
+      };
+    }
 
-  // Transform the products to match the Product interface
-  const transformedProducts = res.data.products?.map((p: any) => {
-    const imageBase = 'http://localhost:3000/uploads/';
-    const processImage = (img: string) => img.startsWith('http') ? img : `${imageBase}${img.replace(/^\//, '')}`;
+    console.log('Products array length:', productsArray.length);
+    console.log('First product:', productsArray[0]);
+
+    // Transform the products to match the Product interface
+    const transformedProducts = productsArray.map((p: any) => {
+      if (!p) {
+        console.warn('Empty product found:', p);
+        return null;
+      }
+      
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const imageBase = `${apiUrl}/uploads/`;
+      const processImage = (img: string) => {
+        if (!img) return 'https://via.placeholder.com/400x400';
+        return img.startsWith('http') ? img : `${imageBase}${img.replace(/^\//, '')}`;
+      };
+
+      const transformed = {
+        id: p._id || p.id || Math.random().toString(),
+        name: p.name || 'Unnamed Product',
+        category: typeof p.category === 'object' ? p.category?.name : p.category || 'Uncategorized',
+        price: Number(p.price) || 0,
+        originalPrice: p.originalPrice ? Number(p.originalPrice) : undefined,
+        rating: Number(p.rating) || 0,
+        reviews: Number(p.reviews) || 0,
+        colors: Array.isArray(p.colors) ? p.colors : [],
+        sizes: Array.isArray(p.sizes) ? p.sizes : [],
+        images: p.images ? (Array.isArray(p.images) ? p.images.map(processImage) : [processImage(p.images)]) : (p.image ? [processImage(p.image)] : []),
+        image: p.image ? processImage(p.image) : (p.images && p.images[0] ? processImage(p.images[0]) : undefined),
+        isFeatured: Boolean(p.isFeatured),
+        description: String(p.description || ''),
+        weight: String(p.weight || ''),
+        material: String(p.material || ''),
+        userReviews: Array.isArray(p.userReviews) ? p.userReviews.map((review: any) => ({
+          user: review.user,
+          username: review.username || review.user?.username || 'Anonymous',
+          rating: Number(review.rating) || 0,
+          comment: String(review.comment || ''),
+          createdAt: review.createdAt || review.date || new Date().toISOString(),
+          _id: review._id || Math.random().toString()
+        })) : []
+      };
+      
+      console.log('Transformed product:', transformed);
+      return transformed;
+    }).filter(Boolean);
+
+    console.log('Final transformed products:', transformedProducts);
 
     return {
-      id: p._id || p.id,
-      name: p.name,
-      category: typeof p.category === 'object' ? p.category.name : p.category,
-      price: p.price,
-      originalPrice: p.originalPrice,
-      rating: p.rating || 0,
-      reviews: p.reviews || 0,
-      colors: p.colors || [],
-      sizes: p.sizes || [],
-      images: (p.images || (p.image ? [p.image] : [])).map(processImage),
-      isFeatured: p.isFeatured || false,
-      description: typeof p.description === 'string' ? p.description : '',
-      weight: typeof p.weight === 'string' ? p.weight : '',
-      material: typeof p.material === 'string' ? p.material : '',
-      userReviews: (p.userReviews || []).map((review: any) => ({
-        user: review.user,
-        username: typeof review.username === 'string' ? review.username : (typeof review.user?.username === 'string' ? review.user.username : 'Anonymous'),
-        rating: typeof review.rating === 'number' ? review.rating : 0,
-        comment: typeof review.comment === 'string' ? review.comment : '',
-        createdAt: typeof review.createdAt === 'string' ? review.createdAt : (typeof review.date === 'string' ? review.date : new Date().toISOString()),
-        _id: review._id || ''
-      }))
+      message: res.data.message || 'Success',
+      products: transformedProducts
     };
-  });
-
-  return {
-    message: res.data.message,
-    products: transformedProducts
-  };
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return {
+      message: 'Error fetching products',
+      products: []
+    };
+  }
 };
 
 export const getProductById = async (id: string): Promise<Product> => {

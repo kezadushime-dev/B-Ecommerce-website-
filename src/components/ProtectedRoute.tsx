@@ -1,20 +1,26 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { getStoredUser, isAuthenticated } from '../services/auth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireAdmin?: boolean;
+  requiredRole?: 'admin' | 'user' | 'moderator';
+  redirectTo?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
-  const { user, isAuthenticated } = useAuth();
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+  children, 
+  requiredRole, 
+  redirectTo = '/auth' 
+}) => {
+  const authenticated = isAuthenticated();
+  const user = getStoredUser();
 
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
+  if (!authenticated) {
+    return <Navigate to={redirectTo} replace />;
   }
 
-  if (requireAdmin && user?.role !== 'admin') {
+  if (requiredRole && user?.role.toLowerCase() !== requiredRole.toLowerCase()) {
     return <Navigate to="/" replace />;
   }
 

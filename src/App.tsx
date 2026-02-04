@@ -24,6 +24,7 @@ import CreateCategory from './pages/productcategory';
 import UserList from './pages/usermanagement';
 import CheckoutPage from './pages/CheckoutPage';
 import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 import './App.css';
@@ -60,14 +61,14 @@ const AppContent = () => {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/dashboard" element={<ProtectedRoute requiredRole="admin"><DashboardPage /></ProtectedRoute>} />
+          <Route path="/orders" element={<ProtectedRoute requiredRole="admin"><OrdersPage /></ProtectedRoute>} />
           <Route path="/track-order" element={<OrderTrackingPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/product" element={<ErrorBoundary><ProductPage /></ErrorBoundary>} />
-          <Route path="/add-product" element={<ProductInsert />} />
-          <Route path="/product-category" element={<CreateCategory />} />
-          <Route path="/user-management" element={<UserList />} />
+          <Route path="/add-product" element={<ProtectedRoute requiredRole="admin"><ProductInsert /></ProtectedRoute>} />
+          <Route path="/product-category" element={<ProtectedRoute requiredRole="admin"><CreateCategory /></ProtectedRoute>} />
+          <Route path="/user-management" element={<ProtectedRoute requiredRole="admin"><UserList /></ProtectedRoute>} />
         </Routes>
       </div>
       {!isDashboardRoute && <Footer />}

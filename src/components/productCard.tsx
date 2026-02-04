@@ -11,10 +11,11 @@ interface ProductProps {
   oldPrice?: number;
   rating: number;
   reviewCount?: number;
-  images: string[];
+  image?: string;
+  images?: string[];
 }
 
-export const ProductCard: React.FC<ProductProps> = ({ id, name, category, price, oldPrice, rating, reviewCount, images = [] }) => {
+export const ProductCard: React.FC<ProductProps> = ({ id, name, category, price, oldPrice, rating, reviewCount, image, images = [] }) => {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const { addToCart } = useCart();
 
@@ -24,14 +25,14 @@ export const ProductCard: React.FC<ProductProps> = ({ id, name, category, price,
     const product = {
       id: id,
       name,
-      category: typeof category === 'string' ? category : category.name,
+      category: typeof category === 'string' ? category : (category?.name || 'Uncategorized'),
       price,
       originalPrice: oldPrice,
       rating,
       reviews: reviewCount || 0,
       colors: [],
       sizes: [],
-      image: images && images.length > 0 ? images[0] : '',
+      image: image || (images && images.length > 0 ? images[0] : ''),
       isFeatured: false,
       description: '',
       weight: '',
@@ -43,46 +44,46 @@ export const ProductCard: React.FC<ProductProps> = ({ id, name, category, price,
 
   return (
     <>
-      <div className="group cursor-pointer">
+      <div className="group cursor-pointer w-full">
         {/* Image Container */}
-        <div className="relative w-64 h-80 overflow-hidden bg-gray-100 rounded-sm mb-4">
+        <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-100 rounded-lg mb-4 shadow-md hover:shadow-xl transition-shadow">
           <img
-            src={images && images.length > 0 ? images[0] : 'https://via.placeholder.com/400x400'}
+            src={image || (images && images.length > 0 ? images[0] : 'https://via.placeholder.com/400x400')}
             alt={name}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
 
           {/* FEATURED Badge */}
-          <span className="absolute top-2 left-2 bg-red-500 text-white text-[10px] px-2 py-1 font-bold uppercase">
+          <span className="absolute top-2 left-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[10px] px-2 py-1 font-bold uppercase rounded-md shadow-md">
             FEATURED
           </span>
 
           {/* Wishlist Icon */}
-          <button className="absolute top-2 right-2 bg-white p-1.5 rounded-full shadow-md hover:bg-red-500 hover:text-white transition-colors" aria-label="Add to wishlist">
+          <button className="absolute top-2 right-2 bg-white p-1.5 rounded-full shadow-lg hover:bg-blue-500 hover:text-white transition-all" aria-label="Add to wishlist">
             <Heart size={16} />
           </button>
 
           {/* Hover Actions */}
           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-            <button onClick={handleAddToCart} className="bg-white p-2 rounded-full hover:bg-blue-600 hover:text-white transition-colors" aria-label="Add to cart">
+            <button onClick={handleAddToCart} className="bg-white p-2 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-lg" aria-label="Add to cart">
               <ShoppingCart size={16} />
             </button>
             <button
               onClick={() => setIsQuickViewOpen(true)}
-              className="bg-white p-2 rounded-full hover:bg-blue-600 hover:text-white transition-colors"
+              className="bg-white p-2 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-lg"
               aria-label="Quick view"
             >
               <Search size={16} />
             </button>
-            <button className="bg-white p-2 rounded-full hover:bg-blue-600 hover:text-white transition-colors" aria-label="Compare product">
+            <button className="bg-white p-2 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-lg" aria-label="Compare product">
               <ArrowLeftRight size={16} />
             </button>
           </div>
         </div>
 
         {/* Product Info */}
-        <div className="pt-4 flex flex-col items-start">
-          <span className="text-gray-400 text-[11px] uppercase font-bold mb-1">{typeof category === 'string' ? category : category.name}</span>
+        <div className="pt-4 flex flex-col items-start bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+          <span className="text-blue-500 text-[11px] uppercase font-bold mb-1">{typeof category === 'string' ? category : (category?.name || 'Uncategorized')}</span>
           <h3 className="text-sm font-bold text-slate-800 hover:text-blue-600 cursor-pointer transition-colors mb-2">
             {name}
           </h3>
@@ -111,12 +112,12 @@ export const ProductCard: React.FC<ProductProps> = ({ id, name, category, price,
 
       {/* QUICK VIEW MODAL */}
       <Modal isOpen={isQuickViewOpen} onClose={() => setIsQuickViewOpen(false)}>
-        <div className="grid grid-cols-1 md:grid-cols-2 p-8 gap-8">
-          <div className="bg-gray-100 aspect-square">
-            <img src={images && images.length > 0 ? images[0] : 'https://via.placeholder.com/400x400'} alt={name} className="w-full h-full object-cover" />
+        <div className="grid grid-cols-1 md:grid-cols-2 p-8 gap-8 bg-white rounded-xl shadow-2xl">
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 aspect-square rounded-lg overflow-hidden shadow-inner">
+            <img src={image || (images && images.length > 0 ? images[0] : 'https://via.placeholder.com/400x400')} alt={name} className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col">
-            <h2 className="text-3xl font-bold mb-2 uppercase">{name}</h2>
+            <h2 className="text-3xl font-bold mb-2 uppercase bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">{name}</h2>
             <div className="flex gap-2 text-xl font-bold text-blue-600 mb-4">
               {oldPrice && <span className="text-gray-400 line-through">${oldPrice.toFixed(2)}</span>}
               <span>${price.toFixed(2)}</span>
@@ -133,10 +134,10 @@ export const ProductCard: React.FC<ProductProps> = ({ id, name, category, price,
                   type="number"
                   defaultValue={1}
                   min="1"
-                  className="w-16 border p-2 text-center outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-16 border-2 border-blue-200 p-2 text-center outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-lg"
                   aria-label="Product quantity"
                 />
-                <button onClick={handleAddToCart} className="flex-1 bg-blue-600 text-white font-bold py-3 uppercase hover:bg-black transition-colors" aria-label="Add to cart">
+                <button onClick={handleAddToCart} className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 uppercase hover:from-blue-700 hover:to-blue-800 transition-all rounded-lg shadow-lg" aria-label="Add to cart">
                   Add to Cart
                 </button>
               </div>

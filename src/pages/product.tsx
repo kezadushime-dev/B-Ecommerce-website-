@@ -35,7 +35,8 @@ interface Review {
   reviews: number;
   colors: string[];
   sizes: string[];
-  image: string;
+  image?: string;
+  images?: string[];
   isFeatured: boolean;
   description: string;
   weight: string;
@@ -139,7 +140,7 @@ const ProductPage = () => {
     const cartProduct = {
       ...p,
       id: p.id.toString(),
-      image: p.images && p.images.length > 0 ? p.images[0] : '',
+      image: p.image || (p.images && p.images.length > 0 ? p.images[0] : ''),
       category: typeof p.category === 'string' ? p.category : p.category.name
     };
     addToCart(cartProduct);
@@ -187,7 +188,7 @@ const ProductPage = () => {
                 const p = products.find(x => x.id === id)!;
                 return (
                   <div key={id} className="p-6 text-center border-r last:border-0 relative">
-                    <div className="h-40 mb-16"><img src={p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/400x400'} alt={String(p.name)} className="w-32 h-32 object-cover mx-auto mb-2" /><p className="font-bold text-xs">{String(p.name)}</p></div>
+                    <div className="h-40 mb-16"><img src={p.image || (p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/400x400')} alt={String(p.name)} className="w-32 h-32 object-cover mx-auto mb-2" /><p className="font-bold text-xs">{String(p.name)}</p></div>
                     <div className="mb-16 font-black text-blue-600">${String(p.price)}</div>
                     <div className="mb-16 text-xs">{String(typeof p.category === 'string' ? p.category : p.category.name)}</div>
                     <div className="mb-16 flex justify-center text-orange-400"><Star size={14} fill="currentColor"/> {p.rating}</div>
@@ -209,7 +210,7 @@ const ProductPage = () => {
                 return (
                   <div key={id} className="border p-4 relative group">
                     <button title="Remove from wishlist" onClick={() => setWishlist(w => w.filter(i => i !== id))} className="absolute top-2 right-2 text-slate-300 hover:text-red-500"><X size={18}/></button>
-                    <img src={p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/400x400'} alt={String(p.name)} className="w-full aspect-square object-cover mb-4" />
+                    <img src={p.image || (p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/400x400')} alt={String(p.name)} className="w-full aspect-square object-cover mb-4" />
                     <h4 className="font-bold text-sm mb-2">{String(p.name)}</h4>
                     <button onClick={() => handleAddToCart(p)} className="w-full bg-blue-600 text-white py-2 text-xs font-bold">MOVE TO CART</button>
                   </div>
@@ -305,7 +306,7 @@ const ProductPage = () => {
                   <div key={p.id} className="group cursor-pointer" onClick={() => setSelectedProduct(p)}>
                     <div className="relative bg-slate-100 overflow-hidden mb-4">
                       {p.isFeatured && <span className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 z-10">FEATURED</span>}
-                    <img src={p.images && p.images.length > 0 ? p.images[0] : 'https://picsum.photos/400/400?random=1'} alt={p.name} className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <img src={p.image || (p.images && p.images.length > 0 ? p.images[0] : 'https://picsum.photos/400/400?random=1')} alt={p.name} className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-700" />
 
                       <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                         <button onClick={(e) => {e.stopPropagation(); setWishlist(prev => [...prev, p.id])}} className="p-2 bg-white rounded-full shadow hover:text-red-500" aria-label="Add to wishlist"><Heart size={16}/></button>
@@ -380,11 +381,11 @@ const ProductPage = () => {
             <div className="flex flex-col lg:flex-row border border-gray-200 bg-white overflow-hidden">
               <div className="w-full lg:w-1/5 p-4 space-y-4">
                 {[1, 2, 3, 4].map((i) => (
-                  <img key={i} src={selectedProduct.images && selectedProduct.images.length > 0 ? selectedProduct.images[0] : 'https://via.placeholder.com/400x400'} alt={`${selectedProduct.name} ${i}`} className="w-full h-24 object-cover cursor-pointer border border-gray-300 hover:border-blue-500" />
+                  <img key={i} src={selectedProduct.image || (selectedProduct.images && selectedProduct.images.length > 0 ? selectedProduct.images[0] : 'https://via.placeholder.com/400x400')} alt={`${selectedProduct.name} ${i}`} className="w-full h-24 object-cover cursor-pointer border border-gray-300 hover:border-blue-500" />
                 ))}
               </div>
               <div className="w-full lg:w-3/5 relative h-[500px]">
-                <img src={selectedProduct.images && selectedProduct.images.length > 0 ? selectedProduct.images[0] : 'https://via.placeholder.com/400x400'} alt={selectedProduct.name} className="absolute inset-0 w-full h-full object-cover" />
+                <img src={selectedProduct.image || (selectedProduct.images && selectedProduct.images.length > 0 ? selectedProduct.images[0] : 'https://via.placeholder.com/400x400')} alt={selectedProduct.name} className="absolute inset-0 w-full h-full object-cover" />
               </div>
               <div className="w-full lg:w-1/5 p-8 space-y-6">
                 <h2 className="text-4xl font-black uppercase tracking-tighter">{String(selectedProduct.name)}</h2>

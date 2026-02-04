@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DashboardLayout } from './Dashboard';
+import { DashboardLayout } from '../components/DashboardLayout';
 import { Search, Download, Eye, Trash2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getOrders, updateOrderStatus, deleteOrder } from '../services/order.service';
@@ -92,7 +92,7 @@ const OrdersPage = () => {
             <h1 className="text-2xl font-bold text-slate-800">Orders</h1>
             <p className="text-slate-500 text-sm">Manage and track all your orders</p>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl">
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors shadow-lg">
             <Download size={16} />
             Export
           </button>
@@ -107,14 +107,14 @@ const OrdersPage = () => {
               placeholder="Search orders..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-xl py-2 pl-10 pr-4"
+              className="w-full bg-white shadow-md rounded-xl py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
             />
           </div>
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 bg-white border border-slate-200 rounded-xl"
+            className="px-4 py-2 bg-white shadow-md rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
@@ -126,9 +126,9 @@ const OrdersPage = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
+        <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 text-left text-xs font-semibold text-slate-500 uppercase">
+            <thead className="bg-blue-50 text-left text-xs font-semibold text-slate-500 uppercase">
               <tr>
                 <th className="px-6 py-4">Order ID</th>
                 <th className="px-6 py-4">Products</th>
@@ -151,7 +151,7 @@ const OrdersPage = () => {
                 </tr>
               ) : (
                 filteredOrders.map((order: any) => (
-                  <tr key={order?._id || Math.random()} className="hover:bg-slate-50">
+                  <tr key={order?._id || Math.random()} className="hover:bg-blue-50 transition-colors">
 
                     <td className="px-6 py-4 font-medium">
                       {order?.orderNumber || `#${order?._id?.slice(-8) || '—'}`}

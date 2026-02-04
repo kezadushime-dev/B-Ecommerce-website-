@@ -92,16 +92,15 @@ export const deleteOrder = async (id: string): Promise<any> => {
     // Get order details first to get customer email before deletion
     const orderResponse = await api.get(`/api/orders/${id}`);
     const order = orderResponse.data;
-    const customerEmail = order.userEmail || order.email || 'customer@example.com'; // Fallback email
+    const customerEmail = order.userEmail || order.email || 'customer@example.com';
 
-    const response = await api.post(`/api/admin/orders/${id}`, { action: 'delete' });
+    const response = await api.delete(`/api/admin/orders/${id}`);
 
     // Send email notification for order deletion
     try {
       await sendOrderStatusEmail(customerEmail, 'deleted', id);
     } catch (emailError) {
       console.error('Failed to send email notification:', emailError);
-      // Don't throw error for email failure, just log it
     }
 
     return response.data;

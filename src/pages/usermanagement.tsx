@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, MoreHorizontal, UserPlus } from 'lucide-react';
-import { DashboardLayout } from './Dashboard';
+import { Mail, MoreHorizontal, UserPlus, Upload } from 'lucide-react';
+import { DashboardLayout } from '../components/DashboardLayout';
 import { userService } from '../services/userService';
 import type { User } from '../Types/user';
 import { Modal } from '../modal/modal';
@@ -10,7 +10,21 @@ const UserList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddUser, setShowAddUser] = useState<boolean>(false);
-  const [newUser, setNewUser] = useState<{ name: string; email: string; role: string }>({ name: '', email: '', role: 'User' });
+  const [newUser, setNewUser] = useState<{ name: string; email: string; role: string; profileImage?: string }>({ name: '', email: '', role: 'User' });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      
+      const reader = new FileReader();
+      reader.onload = () => {
+        setNewUser({ ...newUser, profileImage: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAddUser = async () => {
     try {
@@ -66,10 +80,10 @@ const UserList: React.FC = () => {
 
         {/* Users Table */}
         {!loading && !error && (
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50">
+                <thead className="bg-blue-50">
                   <tr className="text-left">
                     <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">User</th>
                     <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Role</th>
@@ -79,9 +93,13 @@ const UserList: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {users.map((user) => (
-                    <tr key={user._id} className="hover:bg-slate-50 transition-colors">
+                    <tr key={user._id} className="hover:bg-blue-50 transition-colors">
                       <td className="px-6 py-4 flex items-center gap-3">
-                        <img src={user.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} alt={user.username} className="w-10 h-10 rounded-full bg-slate-100" />
+                        <img 
+                          src={user.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} 
+                          alt={user.username} 
+                          className="w-10 h-10 rounded-full bg-slate-100 shadow-md object-cover" 
+                        />
                         <div>
                           <p className="font-semibold text-sm text-slate-900">{user.username}</p>
                           <p className="text-xs text-slate-500 flex items-center gap-1"><Mail size={12} /> {user.email}</p>
@@ -134,6 +152,32 @@ const UserList: React.FC = () => {
           <div className="p-6">
             <h2 className="text-xl font-bold text-slate-800 mb-4">Add New User</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleAddUser(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Profile Image</label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="profile-image"
+                  />
+                  <label 
+                    htmlFor="profile-image" 
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 cursor-pointer transition-colors"
+                  >
+                    <Upload size={16} />
+                    Choose Image
+                  </label>
+                  {newUser.profileImage && (
+                    <img 
+                      src={newUser.profileImage} 
+                      alt="Preview" 
+                      className="w-12 h-12 rounded-full object-cover shadow-md" 
+                    />
+                  )}
+                </div>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
                 <input

@@ -66,6 +66,9 @@ export const authService = {
     const response = await api.post('/auth/login', credentials);
     const { user, token } = response.data;
 
+    console.log('Auth service - storing user:', user);
+    console.log('Auth service - user role:', user.role);
+
     // Store auth data
     localStorage.setItem(AUTH_TOKEN_KEY, token);
     localStorage.setItem('user', JSON.stringify(user));

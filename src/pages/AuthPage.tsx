@@ -2,26 +2,43 @@ import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { authService, getStoredUser } from '../services/auth';
 import { useNavigate } from 'react-router-dom';
+import { Upload } from 'lucide-react';
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', profileImage: '' });
+  const [registerData, setRegisterData] = useState({ name: '', email: '', password: '', avatar: '' });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [successMessage, setSuccessMessage] = useState('');
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setAvatarFile(file);
+      
+      const reader = new FileReader();
+      reader.onload = () => {
+        setRegisterData({ ...registerData, avatar: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
       console.log('Login successful', data);
-      setSuccessMessage('Login successful!');
+      console.log('User role:', data.user.role);
+      setSuccessMessage('Login successful! Redirecting...');
+      
+      // Force page refresh and redirect
       setTimeout(() => {
-        const user = getStoredUser();
-        if (user && user.role === 'admin') {
-          navigate('/dashboard');
+        if (data.user.role.toLowerCase() === 'admin') {
+          window.location.href = '/dashboard';
         } else {
-          navigate('/profile');
+          window.location.href = '/';
         }
-      }, 1000); // Redirect after 1 second
+      }, 1000);
     },
     onError: (error) => {
       console.error('Login error:', error);
@@ -32,7 +49,16 @@ const AuthPage: React.FC = () => {
     mutationFn: authService.register,
     onSuccess: (data) => {
       console.log('Registration successful', data);
-      // Handle successful registration
+      setSuccessMessage('Registration successful! Redirecting...');
+      
+      // Force page refresh and redirect
+      setTimeout(() => {
+        if (data.user.role.toLowerCase() === 'admin') {
+          window.location.href = '/dashboard';
+        } else {
+          window.location.href = '/';
+        }
+      }, 1000);
     },
   });
 
@@ -43,7 +69,12 @@ const AuthPage: React.FC = () => {
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    registerMutation.mutate(registerData);
+    registerMutation.mutate({
+      name: registerData.name,
+      email: registerData.email,
+      password: registerData.password,
+      avatar: registerData.avatar
+    });
   };
 
   return (
@@ -133,14 +164,30 @@ const AuthPage: React.FC = () => {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase text-gray-600 tracking-wider">Avatar URL</label>
-                <input
-                  type="text"
-                  value={registerData.avatar}
-                  onChange={(e) => setRegisterData({ ...registerData, avatar: e.target.value })}
-                  className="border border-gray-200 p-3 text-sm focus:border-blue-600 outline-none transition-all"
-                  placeholder="Avatar URL"
-                />
+                <label className="text-xs font-bold uppercase text-gray-600 tracking-wider">Profile Image</label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                    id="avatar-upload"
+                  />
+                  <label 
+                    htmlFor="avatar-upload" 
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 cursor-pointer transition-colors border border-blue-200"
+                  >
+                    <Upload size={16} />
+                    Choose Image
+                  </label>
+                  {registerData.avatar && (
+                    <img 
+                      src={registerData.avatar} 
+                      alt="Avatar Preview" 
+                      className="w-12 h-12 rounded-full object-cover shadow-md" 
+                    />
+                  )}
+                </div>
               </div>
               <p className="text-xs text-gray-400 leading-relaxed italic">
                 Your personal data will be used to support your experience throughout this website.
