@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     tailwindcss(), // 2. Add it to the plugins array
   ],
-  base: process.env.VITE_BASE_PATH || "//Ecommerce-new",
+  base: "/",
   server: {
     port: 5174,
     proxy: {
