@@ -310,7 +310,7 @@ const ProductInsert: React.FC = () => {
                     <label htmlFor="inStock" className="block text-xs font-semibold text-gray-500 uppercase mb-1">In Stock</label>
                     <input id="inStock" type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500" title="In Stock" />
                   </div>
-                  <div>
+                  <div>8
                     <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Stock Quantity</label>
                     <input type="number" value={stock} onChange={(e) => setStock(parseInt(e.target.value) || 0)} placeholder="Enter stock quantity" className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none" />
                   </div>
