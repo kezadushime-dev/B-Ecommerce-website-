@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { authService } from '../services/auth';
+import { authService, getStoredUser } from '../services/auth';
 import { useNavigate } from 'react-router-dom';
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [registerData, setRegisterData] = useState({ username: '', email: '', password: '', profileImage: '' });
+  const [successMessage, setSuccessMessage] = useState('');
 
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
       console.log('Login successful', data);
       setSuccessMessage('Login successful!');
-      setTimeout(() => navigate('/profile'), 1000); // Redirect after 1 second
+      setTimeout(() => {
+        const user = getStoredUser();
+        if (user && user.role === 'admin') {
+          navigate('/dashboard');
+        } else {
+          navigate('/profile');
+        }
+      }, 1000); // Redirect after 1 second
     },
     onError: (error) => {
       console.error('Login error:', error);
@@ -90,13 +100,13 @@ const AuthPage: React.FC = () => {
             <h2 className="text-2xl font-black uppercase mb-8 border-b-2 border-blue-600 w-max pb-2">Register</h2>
             <form className="space-y-6" onSubmit={handleRegisterSubmit}>
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase text-gray-600 tracking-wider">Username *</label>
+                <label className="text-xs font-bold uppercase text-gray-600 tracking-wider">Name *</label>
                 <input
                   type="text"
-                  value={registerData.username}
-                  onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
+                  value={registerData.name}
+                  onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
                   className="border border-gray-200 p-3 text-sm focus:border-blue-600 outline-none transition-all"
-                  placeholder="Username"
+                  placeholder="Name"
                   required
                 />
               </div>
@@ -123,12 +133,13 @@ const AuthPage: React.FC = () => {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase text-gray-600 tracking-wider">Profile Image</label>
+                <label className="text-xs font-bold uppercase text-gray-600 tracking-wider">Avatar URL</label>
                 <input
-                  type="file"
-                  onChange={(e) => setRegisterData({ ...registerData, profileImage: e.target.files?.[0]?.name || '' })}
+                  type="text"
+                  value={registerData.avatar}
+                  onChange={(e) => setRegisterData({ ...registerData, avatar: e.target.value })}
                   className="border border-gray-200 p-3 text-sm focus:border-blue-600 outline-none transition-all"
-                  accept="image/*"
+                  placeholder="Avatar URL"
                 />
               </div>
               <p className="text-xs text-gray-400 leading-relaxed italic">

@@ -4,6 +4,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import { isAuthenticated } from '../services/auth';
 import { useAuth } from '../hooks/useAuth';
+import { createOrder } from '../services/order.service';
 
 interface Product {
   id: string;
@@ -25,6 +26,13 @@ interface Product {
 
 interface CartItem extends Product {
   quantity: number;
+  cartItemId: string; // _id from backend cart item
+}
+
+interface OrderData {
+  shippingAddress: string;
+  paymentMethod?: string;
+  notes?: string;
 }
 
 interface CartContextType {
@@ -36,6 +44,7 @@ interface CartContextType {
   placeOrder: () => Promise<void>;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
+  isPlacingOrder: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -57,11 +66,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const fetchCart = async () => {
     try {
       const response = await api.get('/cart');
-      setCart(response.data);
+      const cartItems: CartItem[] = response.data.map((item: any): CartItem => ({
+        ...item.productId, // spread product properties
+        quantity: item.quantity,
+        cartItemId: item._id
+      }));
+      setCart(cartItems);
     } catch (error: any) {
       // If 404, cart doesn't exist yet, so don't log error
       if (error.response?.status !== 404) {
@@ -81,13 +96,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       toast.error('Please log in to add items to your cart.');
       return;
     }
-    setCart(prev => {
-      const item = prev.find(i => i.id === product.id);
-      return item ? prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i) : [...prev, { ...product, quantity: 1 }];
-    });
     setIsCartOpen(true);
     try {
-      await api.post('/cart', { productId: product.id, quantity: 1 });
+      const existingItem = cart.find(item => item.id === product.id);
+      if (existingItem) {
+        // Remove existing item and add back with incremented quantity
+        await api.delete(`/cart/${existingItem.cartItemId}`);
+        await api.post('/cart', { productId: product.id, quantity: existingItem.quantity + 1 });
+      } else {
+        await api.post('/cart', { productId: product.id, quantity: 1 });
+      }
+      await fetchCart(); // Refetch to get updated cart with cartItemId
       toast.success(`${product.name} added to cart successfully!`);
     } catch (error) {
       console.error('Failed to add product to cart:', error);
@@ -108,10 +127,16 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     if (quantity <= 0) {
       await removeFromCart(id);
     } else {
-      // Note: Backend doesn't have PUT endpoint for updating quantity
-      // For now, just update local state and refetch
-      setCart(prev => prev.map(item => item.id === id ? { ...item, quantity } : item));
-      // TODO: Implement proper quantity update when backend supports it
+      try {
+        const item = cart.find(item => item.id === id);
+        if (item) {
+          await api.delete(`/cart/${item.cartItemId}`);
+          await api.post('/cart', { items: [{ productId: id, quantity }] });
+          await fetchCart();
+        }
+      } catch (error) {
+        console.error('Failed to update quantity:', error);
+      }
     }
   };
 
@@ -125,13 +150,28 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const placeOrder = async () => {
+    setIsPlacingOrder(true);
     try {
-      await api.post('/api/order', { items: cart });
+      const items = cart.map(item => ({
+        productId: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+      }));
+      const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const userId = user?.id;
+      await createOrder({
+        items,
+        total,
+        userId,
+        shippingAddress: 'Default Address',
+        paymentMethod: 'Credit Card',
+        notes: 'Order placed via website'
+      });
       await clearCart();
-      alert('Order placed successfully!');
-    } catch (error) {
-      console.error('Failed to place order:', error);
-      alert('Failed to place order. Please try again.');
+    } finally {
+      setIsPlacingOrder(false);
     }
   };
 
@@ -144,7 +184,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       clearCart,
       placeOrder,
       isCartOpen,
-      setIsCartOpen
+      setIsCartOpen,
+      isPlacingOrder
     }}>
       {children}
     </CartContext.Provider>

@@ -240,12 +240,14 @@ const ProductInsert: React.FC = () => {
                           <button
                             onClick={() => handleEdit(product)}
                             className="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                            aria-label="Edit product"
                           >
                             <Edit size={14} />
                           </button>
                           <button
                             onClick={() => handleDelete(product.id)}
                             className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600"
+                            aria-label="Delete product"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -260,11 +262,11 @@ const ProductInsert: React.FC = () => {
 
         {/* Modal for Add/Edit Product */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">{editingProduct ? 'Edit Product' : 'Add Product'}</h3>
-                <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">
+                <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700" aria-label="Close modal">
                   <X size={20} />
                 </button>
               </div>
@@ -283,7 +285,7 @@ const ProductInsert: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Category</label>
-                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none">
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none" aria-label="Select category">
                     <option value="">Select a category</option>
                     {categoriesData?.map((cat: any) => (
                       <option key={cat._id} value={cat.name}>
@@ -294,7 +296,7 @@ const ProductInsert: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Vendor</label>
-                  <select value={vendorId} onChange={(e) => setVendorId(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none">
+                  <select value={vendorId} onChange={(e) => setVendorId(e.target.value)} className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none" aria-label="Select vendor">
                     <option value="">Select a vendor</option>
                     {usersData?.users?.map((user: any) => (
                       <option key={user.id || user._id} value={user.name}>

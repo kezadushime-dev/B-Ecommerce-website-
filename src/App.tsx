@@ -19,10 +19,12 @@ import { CartProvider } from './context/CartContext';
 import CategoryPage from "./pages/category";
 import DashboardPage from './pages/DashboardPage';
 import OrdersPage from './pages/OrdersPage';
+import OrderTrackingPage from './pages/OrderTrackingPage';
 import CreateCategory from './pages/productcategory';
 import UserList from './pages/usermanagement';
 import CheckoutPage from './pages/CheckoutPage';
 import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import './App.css';
 
@@ -60,6 +62,7 @@ const AppContent = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/track-order" element={<OrderTrackingPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/product" element={<ErrorBoundary><ProductPage /></ErrorBoundary>} />
           <Route path="/add-product" element={<ProductInsert />} />

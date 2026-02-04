@@ -2,7 +2,7 @@ import React from 'react';
 import { useCart } from '../context/CartContext';
 
 const CartPage: React.FC = () => {
-  const { cart, removeFromCart, updateQuantity, placeOrder } = useCart();
+  const { cart, removeFromCart, updateQuantity, clearCart, placeOrder } = useCart();
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -38,15 +38,20 @@ const CartPage: React.FC = () => {
                     <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-2 py-1 bg-gray-200 rounded">-</button>
                     <span className="mx-2">{item.quantity}</span>
                     <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-2 py-1 bg-gray-200 rounded">+</button>
-                    <button onClick={() => removeFromCart(item.id)} className="ml-4 text-red-500">Remove</button>
+                    <button onClick={() => removeFromCart(item.cartItemId)} className="ml-4 text-red-500">Remove</button>
                   </div>
                 </div>
               ))}
               <div className="mt-8 text-right">
                 <p className="text-xl font-bold">Total: ${total.toFixed(2)}</p>
-                <button onClick={placeOrder} className="mt-4 bg-blue-600 text-white px-8 py-3 font-bold uppercase text-sm hover:bg-black transition-all">
-                  Checkout
-                </button>
+                <div className="flex justify-between items-center mt-4">
+                  <button onClick={clearCart} className="bg-red-600 text-white px-4 py-2 font-bold uppercase text-sm hover:bg-red-700 transition-all">
+                    Clear Cart
+                  </button>
+                  <button onClick={placeOrder} className="bg-blue-600 text-white px-8 py-3 font-bold uppercase text-sm hover:bg-black transition-all">
+                    Checkout
+                  </button>
+                </div>
               </div>
             </div>
           )}

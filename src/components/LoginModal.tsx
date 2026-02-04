@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Eye, EyeOff } from 'lucide-react';
-import { login, register } from '../services/auth';
+import { login, register, getStoredUser } from '../services/auth';
 import { useNavigate } from 'react-router-dom';
 
 interface LoginModalProps {
@@ -30,7 +30,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       setLoginSuccess('Login successful!');
       setTimeout(() => {
         onClose();
-        navigate('/');
+        const user = getStoredUser();
+        if (user && user.role === 'admin') {
+          navigate('/dashboard');
+        } else {
+          navigate('/');
+        }
       }, 1000);
     } catch (error: any) {
       setLoginError(error.response?.data?.message || 'Login failed');

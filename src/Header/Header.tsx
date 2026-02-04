@@ -99,6 +99,7 @@ export const Header: React.FC = () => {
           <ul className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-8 px-4 md:px-10 text-xs font-bold uppercase tracking-widest text-gray-700 py-2 md:py-0">
             <li><Link to="/" className="text-blue-600 hover:text-blue-700">Home ▾</Link></li>
             <li><Link to="/product" className="hover:text-blue-600">Shop ▾</Link></li>
+            <li><Link to="/track-order" className="hover:text-blue-600">Track Order</Link></li>
             <li><Link to="/about" className="hover:text-blue-600">Pages ▾</Link></li>
             <li><Link to="/blog" className="hover:text-blue-600">Blog ▾</Link></li>
             <li className="hover:text-blue-600 cursor-pointer">Elements ▾</li>
