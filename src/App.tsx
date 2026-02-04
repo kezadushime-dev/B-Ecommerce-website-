@@ -24,7 +24,7 @@ import CreateCategory from './pages/productcategory';
 import UserList from './pages/usermanagement';
 import CheckoutPage from './pages/CheckoutPage';
 import ErrorBoundary from './components/ErrorBoundary';
-import ProtectedRoute from './components/ProtectedRoute';
+
 
 import './App.css';
 
